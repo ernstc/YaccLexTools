@@ -1,0 +1,55 @@
+﻿  <Target Name="BeforeBuild" DependsOnTargets="BuildGen">
+  </Target>
+  <!-- Build generated file target -->
+  <Target Name="BuildGen" DependsOnTargets="GenerateMyLanguageParser">
+  </Target>
+  <!-- Parser items -->
+  <PropertyGroup>
+    <ToolsDir>$(SolutionDir)packages\YaccLexTools.0.1.1\tools\</ToolsDir>
+    <GplexTool>"$(ToolsDir)gplex.exe"</GplexTool>
+    <GppgTool>"$(ToolsDir)gppg.exe"</GppgTool>
+    <MyLanguageParser>$(ProjectDir)MyLanguage</MyLanguageParser>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="MyLanguage.parser" />
+    <Compile Include="MyLanguage.Parser.cs">
+      <DependentUpon>MyLanguage.parser</DependentUpon>
+    </Compile>
+    <Compile Include="MyLanguage.Scanner.cs">
+      <DependentUpon>MyLanguage.parser</DependentUpon>
+    </Compile>
+    <None Include="MyLanguage.Language.grammar.y">
+      <DependentUpon>MyLanguage.parser</DependentUpon>
+    </None>
+    <Compile Include="MyLanguage.Parser.Generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MyLanguage.Language.grammar.y</DependentUpon>
+    </Compile>
+    <None Include="MyLanguage.Language.analyzer.lex">
+      <DependentUpon>MyLanguage.parser</DependentUpon>
+    </None>
+    <Compile Include="MyLanguage.Scanner.Generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MyLanguage.Language.analyzer.lex</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup />
+  <!--  Generate the parsers -->
+  <Target Name="GenerateMyLanguageParser"
+          Inputs="$(MyLanguageParser).Language.analyzer.lex;$(MyLanguageParser).Language.grammar.y" 
+          Outputs="$(MyLanguageParser).Scanner.Generated.cs;$(MyLanguageParser).Parser.Generated.cs">
+    <Message Text="Generating scanner for $(MyLanguageParser) ..." />
+    <Exec Command="$(GplexTool) &quot;/out:$(MyLanguageParser).Scanner.Generated.cs&quot; &quot;$(MyLanguageParser).Language.analyzer.lex&quot;" 
+          WorkingDirectory="$(ProjectDir)" 
+          Outputs="$(GenDir)Scanner.cs">
+      <Output TaskParameter="Outputs" ItemName="MyLanguageScanner" />
+    </Exec>
+    <Message Text="Generating parser for $(MyLanguageParser) ..." />
+    <Exec Command="$(GppgTool) /no-lines /gplex &quot;$(MyLanguageParser).Language.grammar.y&quot; > &quot;$(MyLanguageParser).Parser.Generated.cs&quot;" 
+          WorkingDirectory="$(ProjectDir)" 
+          Outputs="$(MyLanguageParser).Parser.Generated.cs">
+      <Output TaskParameter="Outputs" ItemName="MyLanguageParser" />
+    </Exec>
+  </Target>
