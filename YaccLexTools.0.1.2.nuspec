@@ -2,20 +2,21 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>YaccLexTools</id>
-        <version>0.1.1</version>
+        <version>0.1.2</version>
         <title>YACC/LEX tools</title>
         <authors>Abriom</authors>
         <owners>Abriom,Ernesto Cianciotta</owners>
-        <projectUrl>http://ecianciotta.abriom.com/2013/05/linguaggi-e-traduttori-con-visual-studio.html</projectUrl>
+        <projectUrl>http://ecianciotta-en.abriom.com/2013/05/languages-and-translators-with-visual.html</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>This package includes GPPG and GPLEX tools for compiling YACC and LEX files in your project. Take a look at project url for further informations.</description>
         <summary>Tools for embedding parsers in your project.</summary>
         <copyright>2013</copyright>
         <language>en-US</language>
-        <tags>yacc lex parser gppg gplex compile</tags>
+        <tags>yacc lex parser gppg gplex compile compiler syntax analyzer grammar</tags>
     </metadata>
     <files>
         <file src="content\GplexBuffers.cs" target="content\GplexBuffers.cs" />
+        <file src="content\ShiftReduceParserCode.cs" target="content\ShiftReduceParserCode.cs" />
         <file src="lib\net40\QUT.ShiftReduceParser.dll" target="lib\net40\QUT.ShiftReduceParser.dll" />
         <file src="src\MyLanguage.Language.analyzer.lex" target="src\MyLanguage.Language.analyzer.lex" />
         <file src="src\MyLanguage.Language.grammar.y" target="src\MyLanguage.Language.grammar.y" />

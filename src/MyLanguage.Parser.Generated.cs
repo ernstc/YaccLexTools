@@ -2,11 +2,11 @@
 // Copyright (c) Wayne Kelly, QUT 2005-2010
 // (see accompanying GPPGcopyright.rtf)
 
-// GPPG version 1.4.2
-// Machine:  COSMIC
-// DateTime: 26/05/2013 00.21.34
-// UserName: Ernesto
-// Input file <E:\Progetti\ConsoleApplication4\ConsoleApplication4\MyLanguage.Language.grammar.y>
+// GPPG version 1.5.0
+// Machine:  
+// DateTime: 
+// UserName: 
+// Input file 
 
 // options: no-lines gplex
 
@@ -18,8 +18,9 @@ using QUT.Gppg;
 
 namespace MyLanguage
 {
-internal enum Token {error=60,
-    EOF=61,NUMBER=62};
+internal enum Token {
+    error=1,EOF=2,NUMBER=3,OP_PLUS=4,OP_MINUS=5,OP_MULT=6,
+    OP_DIV=7,P_OPEN=8,P_CLOSE=9};
 
 internal partial struct ValueType
 { 
@@ -33,53 +34,61 @@ internal abstract class ScanBase : AbstractScanner<ValueType,LexLocation> {
   protected virtual bool yywrap() { return true; }
 }
 
+// Utility class for encapsulating token information
+internal class ScanObj {
+  public int token;
+  public ValueType yylval;
+  public LexLocation yylloc;
+  public ScanObj( int t, ValueType val, LexLocation loc ) {
+    this.token = t; this.yylval = val; this.yylloc = loc;
+  }
+}
+
 internal partial class MyLanguageParser: ShiftReduceParser<ValueType, LexLocation>
 {
 #pragma warning disable 649
   private static Dictionary<int, string> aliasses;
 #pragma warning restore 649
   private static Rule[] rules = new Rule[13];
-  private static State[] states = new State[21];
+  private static State[] states = new State[19];
   private static string[] nonTerms = new string[] {
       "line", "$accept", "exp", "term", "factor", "number", };
 
   static MyLanguageParser() {
-    states[0] = new State(new int[]{62,11,40,12,42,-11,47,-11,59,-11,43,-11,45,-11},new int[]{-1,1,-3,3,-4,20,-5,19,-6,10});
-    states[1] = new State(new int[]{61,2});
+    states[0] = new State(new int[]{3,9,8,10,6,-11,7,-11,4,-11,5,-11,2,-11},new int[]{-1,1,-3,3,-4,18,-5,17,-6,8});
+    states[1] = new State(new int[]{2,2});
     states[2] = new State(-1);
-    states[3] = new State(new int[]{59,4,43,6,45,15});
-    states[4] = new State(new int[]{10,5});
-    states[5] = new State(-2);
-    states[6] = new State(new int[]{62,11,40,12,42,-11,47,-11,59,-11,43,-11,45,-11,41,-11},new int[]{-4,7,-5,19,-6,10});
-    states[7] = new State(new int[]{42,8,47,17,59,-4,43,-4,45,-4,41,-4});
-    states[8] = new State(new int[]{62,11,40,12,42,-11,47,-11,59,-11,43,-11,45,-11,41,-11},new int[]{-5,9,-6,10});
-    states[9] = new State(-7);
-    states[10] = new State(-9);
-    states[11] = new State(-12);
-    states[12] = new State(new int[]{62,11,40,12,42,-11,47,-11,41,-11,43,-11,45,-11},new int[]{-3,13,-4,20,-5,19,-6,10});
-    states[13] = new State(new int[]{41,14,43,6,45,15});
-    states[14] = new State(-10);
-    states[15] = new State(new int[]{62,11,40,12,42,-11,47,-11,59,-11,43,-11,45,-11,41,-11},new int[]{-4,16,-5,19,-6,10});
-    states[16] = new State(new int[]{42,8,47,17,59,-5,43,-5,45,-5,41,-5});
-    states[17] = new State(new int[]{62,11,40,12,42,-11,47,-11,59,-11,43,-11,45,-11,41,-11},new int[]{-5,18,-6,10});
-    states[18] = new State(-8);
-    states[19] = new State(-6);
-    states[20] = new State(new int[]{42,8,47,17,59,-3,43,-3,45,-3,41,-3});
+    states[3] = new State(new int[]{4,4,5,13,2,-2});
+    states[4] = new State(new int[]{3,9,8,10,6,-11,7,-11,4,-11,5,-11,2,-11,9,-11},new int[]{-4,5,-5,17,-6,8});
+    states[5] = new State(new int[]{6,6,7,15,4,-4,5,-4,2,-4,9,-4});
+    states[6] = new State(new int[]{3,9,8,10,6,-11,7,-11,4,-11,5,-11,2,-11,9,-11},new int[]{-5,7,-6,8});
+    states[7] = new State(-7);
+    states[8] = new State(-9);
+    states[9] = new State(-12);
+    states[10] = new State(new int[]{3,9,8,10,6,-11,7,-11,9,-11,4,-11,5,-11},new int[]{-3,11,-4,18,-5,17,-6,8});
+    states[11] = new State(new int[]{9,12,4,4,5,13});
+    states[12] = new State(-10);
+    states[13] = new State(new int[]{3,9,8,10,6,-11,7,-11,4,-11,5,-11,2,-11,9,-11},new int[]{-4,14,-5,17,-6,8});
+    states[14] = new State(new int[]{6,6,7,15,4,-5,5,-5,2,-5,9,-5});
+    states[15] = new State(new int[]{3,9,8,10,6,-11,7,-11,4,-11,5,-11,2,-11,9,-11},new int[]{-5,16,-6,8});
+    states[16] = new State(-8);
+    states[17] = new State(-6);
+    states[18] = new State(new int[]{6,6,7,15,4,-3,5,-3,2,-3,9,-3});
 
     for (int sNo = 0; sNo < states.Length; sNo++) states[sNo].number = sNo;
 
-    rules[1] = new Rule(-2, new int[]{-1,61});
-    rules[2] = new Rule(-1, new int[]{-3,59,10});
+    rules[1] = new Rule(-2, new int[]{-1,2});
+    rules[2] = new Rule(-1, new int[]{-3});
     rules[3] = new Rule(-3, new int[]{-4});
-    rules[4] = new Rule(-3, new int[]{-3,43,-4});
-    rules[5] = new Rule(-3, new int[]{-3,45,-4});
+    rules[4] = new Rule(-3, new int[]{-3,4,-4});
+    rules[5] = new Rule(-3, new int[]{-3,5,-4});
     rules[6] = new Rule(-4, new int[]{-5});
-    rules[7] = new Rule(-4, new int[]{-4,42,-5});
-    rules[8] = new Rule(-4, new int[]{-4,47,-5});
+    rules[7] = new Rule(-4, new int[]{-4,6,-5});
+    rules[8] = new Rule(-4, new int[]{-4,7,-5});
     rules[9] = new Rule(-5, new int[]{-6});
-    rules[10] = new Rule(-5, new int[]{40,-3,41});
+    rules[10] = new Rule(-5, new int[]{8,-3,9});
     rules[11] = new Rule(-6, new int[]{});
-    rules[12] = new Rule(-6, new int[]{62});
+    rules[12] = new Rule(-6, new int[]{3});
   }
 
   protected override void Initialize() {
@@ -91,36 +100,41 @@ internal partial class MyLanguageParser: ShiftReduceParser<ValueType, LexLocatio
 
   protected override void DoAction(int action)
   {
+#pragma warning disable 162, 1522
     switch (action)
     {
-      case 2: // line -> exp, ';', '\n'
-{ Console.WriteLine("result is {0}\n", ValueStack[ValueStack.Depth-3].n);}
+      case 2: // line -> exp
+{ Console.WriteLine("result is {0}\n", ValueStack[ValueStack.Depth-1].n);}
         break;
       case 3: // exp -> term
-{CurrentSemanticValue.n = ValueStack[ValueStack.Depth-1].n;}
+{ CurrentSemanticValue.n = ValueStack[ValueStack.Depth-1].n;			Console.WriteLine("Rule -> exp: {0}", ValueStack[ValueStack.Depth-1].n); }
         break;
-      case 4: // exp -> exp, '+', term
-{CurrentSemanticValue.n = ValueStack[ValueStack.Depth-3].n + ValueStack[ValueStack.Depth-1].n;}
+      case 4: // exp -> exp, OP_PLUS, term
+{ CurrentSemanticValue.n = ValueStack[ValueStack.Depth-3].n + ValueStack[ValueStack.Depth-1].n;	Console.WriteLine("Rule -> exp: {0} + {1}", ValueStack[ValueStack.Depth-3].n, ValueStack[ValueStack.Depth-1].n); }
         break;
-      case 5: // exp -> exp, '-', term
-{CurrentSemanticValue.n = ValueStack[ValueStack.Depth-3].n - ValueStack[ValueStack.Depth-1].n;}
+      case 5: // exp -> exp, OP_MINUS, term
+{ CurrentSemanticValue.n = ValueStack[ValueStack.Depth-3].n - ValueStack[ValueStack.Depth-1].n;	Console.WriteLine("Rule -> exp: {0} - {1}", ValueStack[ValueStack.Depth-3].n, ValueStack[ValueStack.Depth-1].n); }
         break;
       case 6: // term -> factor
-{CurrentSemanticValue.n = ValueStack[ValueStack.Depth-1].n;}
+{CurrentSemanticValue.n = ValueStack[ValueStack.Depth-1].n;			Console.WriteLine("Rule -> term: {0}", ValueStack[ValueStack.Depth-1].n); }
         break;
-      case 7: // term -> term, '*', factor
-{CurrentSemanticValue.n = ValueStack[ValueStack.Depth-3].n * ValueStack[ValueStack.Depth-1].n;}
+      case 7: // term -> term, OP_MULT, factor
+{CurrentSemanticValue.n = ValueStack[ValueStack.Depth-3].n * ValueStack[ValueStack.Depth-1].n;	Console.WriteLine("Rule -> term: {0} * {1}", ValueStack[ValueStack.Depth-3].n, ValueStack[ValueStack.Depth-1].n); }
         break;
-      case 8: // term -> term, '/', factor
-{CurrentSemanticValue.n = ValueStack[ValueStack.Depth-3].n / ValueStack[ValueStack.Depth-1].n;}
+      case 8: // term -> term, OP_DIV, factor
+{CurrentSemanticValue.n = ValueStack[ValueStack.Depth-3].n / ValueStack[ValueStack.Depth-1].n;	Console.WriteLine("Rule -> term: {0} / {1}", ValueStack[ValueStack.Depth-3].n, ValueStack[ValueStack.Depth-1].n); }
         break;
       case 9: // factor -> number
-{CurrentSemanticValue.n = ValueStack[ValueStack.Depth-1].n;}
+{CurrentSemanticValue.n = ValueStack[ValueStack.Depth-1].n;			Console.WriteLine("Rule -> factor: {0}", ValueStack[ValueStack.Depth-1].n); }
         break;
-      case 10: // factor -> '(', exp, ')'
-{CurrentSemanticValue.n = ValueStack[ValueStack.Depth-2].n;}
+      case 10: // factor -> P_OPEN, exp, P_CLOSE
+{CurrentSemanticValue.n = ValueStack[ValueStack.Depth-2].n;			Console.WriteLine("Rule -> factor: ( {0} )", ValueStack[ValueStack.Depth-1].n);}
+        break;
+      case 12: // number -> NUMBER
+{ Console.WriteLine("Rule -> number: {0}", ValueStack[ValueStack.Depth-1].n); }
         break;
     }
+#pragma warning restore 162, 1522
   }
 
   protected override string TerminalToString(int terminal)
