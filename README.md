@@ -1,8 +1,11 @@
-YaccLexTools
-============
+Yacc/Lex Tools
+==============
 
-This package includes GPPG and GPLEX tools for compiling YACC and LEX files in your project. 
+This package includes GPPG and GPLEX tools for compiling YACC and LEX source files in your C# project.
 
-Follow the link below for further informations.
+After installing this package, just type "Add-Parser MyLanguage" into Package Manager Console to add a new parser in your project and then Build.
+For a working example type "Add-CalculatorExample".
 
-http://ecianciotta-en.abriom.com/2013/05/languages-and-translators-with-visual.html
+Take a look at this post for further informations:
+
+http://ecianciotta-en.abriom.com/2013/08/yacclex-tools-v02.html

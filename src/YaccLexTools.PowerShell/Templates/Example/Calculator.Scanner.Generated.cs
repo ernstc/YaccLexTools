@@ -30,7 +30,7 @@ using System.Diagnostics.CodeAnalysis;
 
 using QUT.GplexBuffers;
 
-namespace MyLanguage
+namespace Calculator
 {   
     /// <summary>
     /// Summary Canonical example of GPLEX automaton
@@ -83,7 +83,7 @@ namespace MyLanguage
     // If the compiler can't find the scanner base class maybe you
     // need to run GPPG with the /gplex option, or GPLEX with /noparser
 #if BABEL
-     internal sealed partial class MyLanguageScanner : ScanBase, IColorScan
+     internal sealed partial class CalculatorScanner : ScanBase, IColorScan
     {
         private ScanBuff buffer;
         int currentScOrd;  // start condition ordinal
@@ -100,7 +100,7 @@ namespace MyLanguage
                    currentStart = startState[value]; }
         }
 #else  // BABEL
-     internal sealed partial class MyLanguageScanner : ScanBase
+     internal sealed partial class CalculatorScanner : ScanBase
     {
         private ScanBuff buffer;
         int currentScOrd;  // start condition ordinal
@@ -263,12 +263,12 @@ int NextState() {
         // =================== End Nested classes =======================
 
 #if !NOFILES
-     internal MyLanguageScanner(Stream file) {
+     internal CalculatorScanner(Stream file) {
             SetSource(file); // no unicode option
         }   
 #endif // !NOFILES
 
-     internal MyLanguageScanner() { }
+     internal CalculatorScanner() { }
 
         private int readPos;
 

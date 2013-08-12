@@ -1,5 +1,5 @@
-%namespace MyLanguage
-%scannertype MyLanguageScanner
+%namespace Calculator
+%scannertype CalculatorScanner
 %visibility internal
 %tokentype Token
 

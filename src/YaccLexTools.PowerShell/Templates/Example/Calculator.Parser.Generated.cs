@@ -16,7 +16,7 @@ using System.Globalization;
 using System.Text;
 using QUT.Gppg;
 
-namespace MyLanguage
+namespace Calculator
 {
 internal enum Token {
     error=1,EOF=2,NUMBER=3,OP_PLUS=4,OP_MINUS=5,OP_MULT=6,
@@ -44,7 +44,7 @@ internal class ScanObj {
   }
 }
 
-internal partial class MyLanguageParser: ShiftReduceParser<ValueType, LexLocation>
+internal partial class CalculatorParser: ShiftReduceParser<ValueType, LexLocation>
 {
 #pragma warning disable 649
   private static Dictionary<int, string> aliasses;
@@ -54,7 +54,7 @@ internal partial class MyLanguageParser: ShiftReduceParser<ValueType, LexLocatio
   private static string[] nonTerms = new string[] {
       "line", "$accept", "exp", "term", "factor", "number", };
 
-  static MyLanguageParser() {
+  static CalculatorParser() {
     states[0] = new State(new int[]{3,9,8,10,6,-11,7,-11,4,-11,5,-11,2,-11},new int[]{-1,1,-3,3,-4,18,-5,17,-6,8});
     states[1] = new State(new int[]{2,2});
     states[2] = new State(-1);

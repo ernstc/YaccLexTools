@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace MyLanguage
+namespace Calculator
 {
-    internal partial class MyLanguageScanner
+    internal partial class CalculatorScanner
     {
 
         void GetNumber()

@@ -1,6 +1,6 @@
-%namespace MyLanguage
+%namespace Calculator
 %partial
-%parsertype MyLanguageParser
+%parsertype CalculatorParser
 %visibility internal
 %tokentype Token
 
