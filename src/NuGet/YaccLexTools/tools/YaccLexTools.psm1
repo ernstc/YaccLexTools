@@ -463,7 +463,7 @@ function Add-ProjectSettings($ParserName, $Namespace)
 		$pg = $xml.AddPropertyGroup()
 		$pg.Label = 'YltProperties'
 
-		$void = $pg.AddProperty('YltTools', '$(SolutionDir)packages\YaccLexTools.0.2.0\tools\')
+		$void = $pg.AddProperty('YltTools', '$(SolutionDir)packages\YaccLexTools.0.2.1\tools\')
 		$void = $pg.AddProperty('GplexTool', '"$(YltTools)gplex.exe"')
 		$void = $pg.AddProperty('GppgTool', '"$(YltTools)gppg.exe"')
 		$void = $pg.AddProperty('Parsers', $ParserName)
