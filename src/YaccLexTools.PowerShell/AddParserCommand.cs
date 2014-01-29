@@ -18,7 +18,6 @@ namespace YaccLexTools.PowerShell
 			// Using check because this is effecitively public surface since
 			// it is called by a PowerShell command.
 			Check.NotEmpty(parserName, "parserName");
-			Check.NotEmpty(@namespace, "namespace");
 			
 			Execute(() => Execute(parserName, @namespace));
 		}
@@ -27,6 +26,10 @@ namespace YaccLexTools.PowerShell
 		public void Execute(string parserName, string @namespace)
 		{
 			DebugCheck.NotEmpty(parserName);
+
+            string rootNamespace = Project.GetRootNamespace();
+            if (String.IsNullOrEmpty(@namespace))
+                @namespace = rootNamespace;
 			
 			WriteLine("\nAdding parser \"" + parserName + "\"...\n");
 
@@ -34,7 +37,6 @@ namespace YaccLexTools.PowerShell
 			tokens.Add("parserName", parserName);
 			tokens.Add("namespace", @namespace);
 
-			string rootNamespace = Project.GetRootNamespace();
 			string path = @namespace.Replace(".", "\\");
 
 			if (rootNamespace != null && @namespace.StartsWith(rootNamespace))

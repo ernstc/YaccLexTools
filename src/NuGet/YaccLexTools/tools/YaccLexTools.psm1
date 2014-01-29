@@ -65,36 +65,44 @@ function Add-Parser
 		[string] $Namespace
 	) 
 
-	if (!$Namespace) { $Namespace = 'Parsers' }
+	$ParserKey = Get-ParserKey $ParserName $Namespace
 
-    $runner = New-YltRunner $ProjectName $StartUpProjectName $null $ConfigurationTypeName
+	$project = Get-Project
+	$buildProject = Get-MSBuildProject
+	$xml = $buildProject.Xml
 
-    try
-    {
-        Invoke-RunnerCommand $runner YaccLexTools.PowerShell.AddParserCommand @( $ParserName, $Namespace )
-        $error = Get-RunnerError $runner
+	$itemGroup = $xml.ItemGroups | ?{ $_.Label -eq $ParserKey + 'Files' }
+	if (!$itemGroup)
+	{
+		$runner = New-YltRunner $ProjectName $StartUpProjectName $null $ConfigurationTypeName
 
-        if ($error)
-        {
-            if ($knownExceptions -notcontains $error.TypeName)
-            {
-                Write-Host $error.StackTrace
-            }
-            else
-            {
-                Write-Verbose $error.StackTrace
-            }
+		try
+		{
+			Invoke-RunnerCommand $runner YaccLexTools.PowerShell.AddParserCommand @( $ParserName, $Namespace )
+			$error = Get-RunnerError $runner
 
-            throw $error.Message
-        }		
-        $(Get-VSComponentModel).GetService([NuGetConsole.IPowerConsoleWindow]).Show()
-	
-		Add-ProjectSettings $ParserName $Namespace
-    }
-    finally
-    {			
-        Remove-Runner $runner		
-    }
+			if ($error)
+			{
+				if ($knownExceptions -notcontains $error.TypeName)
+				{
+					Write-Host $error.StackTrace
+				}
+				else
+				{
+					Write-Verbose $error.StackTrace
+				}
+
+				throw $error.Message
+			}		
+			$(Get-VSComponentModel).GetService([NuGetConsole.IPowerConsoleWindow]).Show()
+		}
+		finally
+		{			
+			Remove-Runner $runner		
+		}
+	}
+
+	Add-ProjectSettings $ParserName $Namespace
 }
 
 
@@ -112,24 +120,27 @@ function Remove-Parser
 	param(
 		[parameter(Position = 0,
             Mandatory = $true)]
-		[string] $ParserName
+		[string] $ParserName,
+		[parameter(Position = 1)]
+		[string] $Namespace
 	) 
 
+	$ParserKey = Get-ParserKey $ParserName $Namespace	
 
 	$project = Get-Project
 	$buildProject = Get-MSBuildProject
 	$xml = $buildProject.Xml
 
 
-	$pg = $xml.PropertyGroups | ?{ $_.Label -eq 'YltProperties' }
+	$pg = $xml.PropertyGroups | ?{ $_.Label -eq 'YltParsers' }
 	if ($pg)
 	{
-		$parsers = $pg.Properties | ?{ $_.Name -eq 'Parsers' }
+		$parsers = $pg.Properties | ?{ $_.Name -eq 'Names' }
 		$v = $parsers.Value.Split(';')
-		if ($v.Contains($ParserName))
+		if ($v.Contains($ParserKey))
 		{
 			$s = ''
-			foreach ($item in $v) { if (!($item -eq $ParserName)) { $s += $item + ';' } }
+			foreach ($item in $v) { if (!($item -eq $ParserKey)) { $s += $item + ';' } }
 			if ($s.Length -gt 0) 
 			{ 
 				$s = $s.Substring(0, $s.Length - 1)
@@ -138,6 +149,11 @@ function Remove-Parser
 			else
 			{
 				$pg.Parent.RemoveChild($pg)
+				$pg = $xml.PropertyGroups | ?{ $_.Label -eq 'YltProperties' }
+				if ($pg)
+				{
+					$pg.Parent.RemoveChild($pg)
+				}
 			}
 		}
 	}
@@ -146,7 +162,7 @@ function Remove-Parser
 	$targetBuildGen = $xml.Targets | ?{ $_.Name -eq 'YltBuildGen' }
 	if ($targetBuildGen)
 	{
-		$dependency = 'Generate' + $ParserName
+		$dependency = 'Generate' + $ParserKey
 		Remove-TargetDependency $targetBuildGen $dependency
 		if ($targetBuildGen.DependsOnTargets -eq '')
 		{
@@ -161,13 +177,13 @@ function Remove-Parser
 	}
 
 	
-	$pg = $xml.PropertyGroups | ?{ $_.Label -eq 'Generate' + $ParserName + 'Properties' }
+	$pg = $xml.PropertyGroups | ?{ $_.Label -eq 'Generate' + $ParserKey + 'Properties' }
 	if ($pg)
 	{
 		$pg.Parent.RemoveChild($pg)
 	}
 
-	$target = $xml.Targets | ?{ $_.Name -eq 'Generate' + $ParserName }
+	$target = $xml.Targets | ?{ $_.Name -eq 'Generate' + $ParserKey }
 	if ($target)
 	{
 		$target.Parent.RemoveChild($target)
@@ -194,10 +210,10 @@ function Remove-AllParsers
 	$buildProject = Get-MSBuildProject
 	$xml = $buildProject.Xml
 
-	$pg = $xml.PropertyGroups | ?{ $_.Label -eq 'YltProperties' }
+	$pg = $xml.PropertyGroups | ?{ $_.Label -eq 'YltParsers' }
 	if ($pg)
 	{
-		$parsers = $pg.Properties | ?{ $_.Name -eq 'Parsers' }
+		$parsers = $pg.Properties | ?{ $_.Name -eq 'Names' }
 		$v = $parsers.Value.Split(';')
 		
 		foreach ($item in $v)
@@ -315,6 +331,22 @@ function New-DomainDispatcher($ToolsPath)
         $null)
 
     return $dispatcher
+}
+
+
+function Get-ParserKey($ParserName, $Namespace)
+{
+	if (!$Namespace)
+	{
+		return $ParserName
+	}
+	
+	$key = $ParserName
+	if ($Namespace.Length -gt 0)
+	{
+		$key += '-' + $Namespace.Replace('.', '-')
+	}
+	return $key
 }
 
 
@@ -447,6 +479,10 @@ function Add-ProjectSettings($ParserName, $Namespace)
 	$buildProject = Get-MSBuildProject
 	$xml = $buildProject.Xml
 
+	$ParserKey = Get-ParserKey $ParserName $Namespace
+
+	if (!$Namespace) { $Namespace = '' }
+
 	$rootNamespace = ($project.Properties | ?{ $_.Name -eq 'RootNamespace' }).Value
 	$path = $Namespace.Replace('.', '\')
 	if ($Namespace.StartsWith($rootNamespace))
@@ -457,6 +493,22 @@ function Add-ProjectSettings($ParserName, $Namespace)
 	if ($path.Length -gt 0) { $path += '\' }
 
 
+	$parsers = $xml.PropertyGroups | ?{ $_.Label -eq 'YltParsers' }
+	if (!$parsers)
+	{
+		$parsers = $xml.AddPropertyGroup()
+		$parsers.Label = 'YltParsers'
+		$void = $parsers.AddProperty('Names', $ParserKey)
+	}
+	else
+	{
+		$names = $parsers.Properties | ?{ $_.Name -eq 'Names' }
+		if (!$names.Value.Split(';').Contains($ParserKey))
+		{
+			$names.Value += ';' + $ParserKey
+		}
+	}
+
 	$pg = $xml.PropertyGroups | ?{ $_.Label -eq 'YltProperties' }
 	if (!$pg)
 	{
@@ -466,15 +518,6 @@ function Add-ProjectSettings($ParserName, $Namespace)
 		$void = $pg.AddProperty('YltTools', '$(SolutionDir)packages\YaccLexTools.0.2.1\tools\')
 		$void = $pg.AddProperty('GplexTool', '"$(YltTools)gplex.exe"')
 		$void = $pg.AddProperty('GppgTool', '"$(YltTools)gppg.exe"')
-		$void = $pg.AddProperty('Parsers', $ParserName)
-	}
-	else
-	{
-		$parsers = $pg.Properties | ?{ $_.Name -eq 'Parsers' }
-		if (!$parsers.Value.Split(';').Contains($ParserName))
-		{
-			$parsers.Value += ';' + $ParserName
-		}
 	}
 
 
@@ -502,7 +545,7 @@ function Add-ProjectSettings($ParserName, $Namespace)
 
 
 	$targetBuildGen = $xml.Targets | ?{ $_.Name -eq 'YltBuildGen' }
-	$s = 'Generate' + $ParserName
+	$s = 'Generate' + $ParserKey
 	if (!$targetBuildGen)
 	{
 		$targetBuildGen = $xml.AddTarget('YltBuildGen')
@@ -524,66 +567,76 @@ function Add-ProjectSettings($ParserName, $Namespace)
 	}
 
 
-	$pg = $xml.AddPropertyGroup()
-	$pg.Label = 'Generate' + $ParserName + 'Properties'
+	$pg = $xml.PropertyGroups | ?{ $_.Label -eq 'Generate' + $ParserKey + 'Properties' }
+	if (!$pg)
+	{
+		$pg = $xml.AddPropertyGroup()
+		$pg.Label = 'Generate' + $ParserKey + 'Properties'
 
-	$parserPrefix = '$(' + $ParserName + 'Parser)'
-
-	$void = $pg.AddProperty($ParserName + 'Parser', '$(ProjectDir)' + $path + $ParserName)
-
-	$target = $xml.AddTarget('Generate' + $ParserName)
-	$target.Inputs = $parserPrefix + '.Language.analyzer.lex;' + $parserPrefix + '.Language.grammar.y'
-	$target.Outputs = $parserPrefix + '.Scanner.Generated.cs;' + $parserPrefix + '.Parser.Generated.cs'
+		$void = $pg.AddProperty($ParserKey + 'Parser', '$(ProjectDir)' + $path + $ParserName)
+	}
 
 
-
-	$task = $target.AddTask('Message')
-	$task.SetParameter('Text', 'Generating scanner for ' + $parserPrefix + ' ...')
+	$target = $xml.Targets | ?{ $_.Name -eq 'Generate' + $ParserKey }
+	if (!$target)
+	{
+		$target = $xml.AddTarget('Generate' + $ParserKey)
 	
-	$task = $target.AddTask('Exec')
-	$task.SetParameter('Command', '$(GplexTool) "/out:' + $parserPrefix + '.Scanner.Generated.cs" "' + $parserPrefix + '.Language.analyzer.lex"')
-	$task.SetParameter('WorkingDirectory', '$(ProjectDir)')
-	$task.SetParameter('Outputs', '$(GenDir)Scanner.cs')
-	$void = $task.AddOutputItem('Outputs', $ParserName + 'Scanner')
+		$parserPrefix = '$(' + $ParserKey + 'Parser)'
+	
+		$target.Inputs = $parserPrefix + '.Language.analyzer.lex;' + $parserPrefix + '.Language.grammar.y'
+		$target.Outputs = $parserPrefix + '.Scanner.Generated.cs;' + $parserPrefix + '.Parser.Generated.cs'
 
+		$task = $target.AddTask('Message')
+		$task.SetParameter('Text', 'Generating scanner for ' + $parserPrefix + ' ...')
+	
+		$task = $target.AddTask('Exec')
+		$task.SetParameter('Command', '$(GplexTool) "/out:' + $parserPrefix + '.Scanner.Generated.cs" "' + $parserPrefix + '.Language.analyzer.lex"')
+		$task.SetParameter('WorkingDirectory', '$(ProjectDir)')
+		$task.SetParameter('Outputs', '$(GenDir)Scanner.cs')
+		$void = $task.AddOutputItem('Outputs', $ParserName + 'Scanner')
 
-	$task = $target.AddTask('Message')
-	$task.SetParameter('Text', 'Generating parser for ' + $parserPrefix + ' ...')
+		$task = $target.AddTask('Message')
+		$task.SetParameter('Text', 'Generating parser for ' + $parserPrefix + ' ...')
 		
-	$task = $target.AddTask('Exec')
-	$task.SetParameter('Command', '$(GppgTool) /no-lines /gplex "' + $parserPrefix + '.Language.grammar.y" > "' + $parserPrefix + '.Parser.Generated.cs"')
-	$task.SetParameter('WorkingDirectory', '$(ProjectDir)')
-	$task.SetParameter('Outputs', $parserPrefix + '.Parser.Generated.cs')
-	$void = $task.AddOutputItem('Outputs', $ParserName)
+		$task = $target.AddTask('Exec')
+		$task.SetParameter('Command', '$(GppgTool) /no-lines /gplex "' + $parserPrefix + '.Language.grammar.y" > "' + $parserPrefix + '.Parser.Generated.cs"')
+		$task.SetParameter('WorkingDirectory', '$(ProjectDir)')
+		$task.SetParameter('Outputs', $parserPrefix + '.Parser.Generated.cs')
+		$void = $task.AddOutputItem('Outputs', $ParserName)
+	}
 
+	
+	$itemGroup = $xml.ItemGroups | ?{ $_.Label -eq $ParserKey + 'Files' }
+	if (!$itemGroup)
+	{
+		$itemGroup = $xml.AddItemGroup()
+		$itemGroup.Label = $ParserKey + 'Files'
 
-
-	$itemGroup = $xml.AddItemGroup()
-	$itemGroup.Label = $ParserName + 'Files'
-
-	$item = $itemGroup.AddItem('None', $path + $ParserName + '.parser')
+		$item = $itemGroup.AddItem('None', $path + $ParserName + '.parser')
 	
-	$item = $itemGroup.AddItem('Compile', $path + $ParserName + '.Parser.cs')
-	$void = $item.AddMetadata('DependentUpon', $ParserName + '.parser')
+		$item = $itemGroup.AddItem('Compile', $path + $ParserName + '.Parser.cs')
+		$void = $item.AddMetadata('DependentUpon', $ParserName + '.parser')
 	
-	$item = $itemGroup.AddItem('Compile', $path + $ParserName + '.Scanner.cs')
-	$void = $item.AddMetadata('DependentUpon', $ParserName + '.parser')
+		$item = $itemGroup.AddItem('Compile', $path + $ParserName + '.Scanner.cs')
+		$void = $item.AddMetadata('DependentUpon', $ParserName + '.parser')
 	
-	$item = $itemGroup.AddItem('None', $path + $ParserName + '.Language.grammar.y')
-	$void = $item.AddMetadata('DependentUpon', $ParserName + '.parser')
+		$item = $itemGroup.AddItem('None', $path + $ParserName + '.Language.grammar.y')
+		$void = $item.AddMetadata('DependentUpon', $ParserName + '.parser')
 	
-	$item = $itemGroup.AddItem('Compile', $path + $ParserName + '.Parser.Generated.cs')
-	$void = $item.AddMetadata('AutoGen', 'True')
-	$void = $item.AddMetadata('DesignTime', 'True')
-	$void = $item.AddMetadata('DependentUpon', $ParserName + '.Language.grammar.y')
+		$item = $itemGroup.AddItem('Compile', $path + $ParserName + '.Parser.Generated.cs')
+		$void = $item.AddMetadata('AutoGen', 'True')
+		$void = $item.AddMetadata('DesignTime', 'True')
+		$void = $item.AddMetadata('DependentUpon', $ParserName + '.Language.grammar.y')
 	
-	$item = $itemGroup.AddItem('None', $path + $ParserName + '.Language.analyzer.lex')
-	$void = $item.AddMetadata('DependentUpon', $ParserName + '.parser')
+		$item = $itemGroup.AddItem('None', $path + $ParserName + '.Language.analyzer.lex')
+		$void = $item.AddMetadata('DependentUpon', $ParserName + '.parser')
 	
-	$item = $itemGroup.AddItem('Compile', $path + $ParserName + '.Scanner.Generated.cs')
-	$void = $item.AddMetadata('AutoGen', 'True')
-	$void = $item.AddMetadata('DesignTime', 'True')
-	$void = $item.AddMetadata('DependentUpon', $ParserName + '.Language.analyzer.lex')
+		$item = $itemGroup.AddItem('Compile', $path + $ParserName + '.Scanner.Generated.cs')
+		$void = $item.AddMetadata('AutoGen', 'True')
+		$void = $item.AddMetadata('DesignTime', 'True')
+		$void = $item.AddMetadata('DependentUpon', $ParserName + '.Language.analyzer.lex')
+	}
 
 	$buildProject.Save()
 }
@@ -602,6 +655,205 @@ function Remove-TargetDependency($target, $dependency)
 }
 
 
+function Add-YaccLexToolsSettings
+{
+	$project = Get-Project
+	$buildProject = Get-MSBuildProject
+	$xml = $buildProject.Xml
 
-Export-ModuleMember @( 'Add-Parser', 'Add-CalculatorExample', 'Remove-Parser', 'Remove-AllParsers' )
+	$pg = $xml.PropertyGroups | ?{ $_.Label -eq 'YltParsers' }
+	if ($pg)
+	{
+		$parsers = $pg.Properties | ?{ $_.Name -eq 'Names' }
+		$v = $parsers.Value.Split(';')
+
+
+		$pg = $xml.PropertyGroups | ?{ $_.Label -eq 'YltProperties' }
+		if (!$pg)
+		{
+			$pg = $xml.AddPropertyGroup()
+			$pg.Label = 'YltProperties'
+
+			$void = $pg.AddProperty('YltTools', '$(SolutionDir)packages\YaccLexTools.0.2.1\tools\')
+			$void = $pg.AddProperty('GplexTool', '"$(YltTools)gplex.exe"')
+			$void = $pg.AddProperty('GppgTool', '"$(YltTools)gppg.exe"')
+		}
+
+
+		$targetBeforeBuild = $xml.Targets | ?{ $_.Name -eq 'BeforeBuild' }
+		$s = 'YltBuildGen'
+		if (!$targetBeforeBuild)
+		{
+			$targetBeforeBuild = $xml.AddTarget('BeforeBuild')
+			$targetBeforeBuild.DependsOnTargets = $s
+		}
+		else 
+		{
+			if ($targetBeforeBuild.DependsOnTargets -eq '')
+			{
+				$targetBeforeBuild.DependsOnTargets = $s
+			}
+			else
+			{
+				if (!$targetBeforeBuild.DependsOnTargets.Split(';').Contains($s))
+				{
+					$targetBeforeBuild.DependsOnTargets += ';' + $s
+				}
+			}
+		}
+
+		
+		foreach ($ParserKey in $v)
+		{
+			$targetBuildGen = $xml.Targets | ?{ $_.Name -eq 'YltBuildGen' }
+			$s = 'Generate' + $ParserKey
+			if (!$targetBuildGen)
+			{
+				$targetBuildGen = $xml.AddTarget('YltBuildGen')
+				$targetBuildGen.DependsOnTargets = $s
+			}
+			else 
+			{
+				if ($targetBuildGen.DependsOnTargets -eq '')
+				{
+					$targetBuildGen.DependsOnTargets = $s
+				}
+				else
+				{
+					if (!$targetBuildGen.DependsOnTargets.Split(';').Contains($s))
+					{
+						$targetBuildGen.DependsOnTargets += ';' + $s
+					}
+				}
+			}
+
+
+			$pg = $xml.PropertyGroups | ?{ $_.Label -eq 'Generate' + $ParserKey + 'Properties' }
+			if (!$pg)
+			{
+				$pg = $xml.AddPropertyGroup()
+				$pg.Label = 'Generate' + $ParserKey + 'Properties'
+
+				$ParserName = $ParserKey
+				$path = ''
+				
+				$idx = $ParserKey.IndexOf('-')
+				if ($idx -gt 0)
+				{
+					$rootNamespaceProperty = $xml.Properties | ?{ $_.Name -eq 'RootNamespace' }
+					$rootNamespace = $rootNamespaceProperty.Value
+
+					$ParserName = $ParserKey.Substring(0, $idx)
+					$Namespace = $ParserKey.Substring($idx + 1).Replace('-', '.')
+					
+					$path = $Namespace.Replace('.', '\')
+
+					if ($rootNamespace)
+					{
+						if ($Namespace.StartsWith($rootNamespace))
+						{
+							$path = $path.Substring($rootNamespace.Length)
+							if ($path.StartsWith('\')) { $path = $path.Substring(1) }
+						}
+					}
+					$path += '\'
+				}
+
+				$void = $pg.AddProperty($ParserKey + 'Parser', '$(ProjectDir)' + $path + $ParserName)
+			}
+
+
+			$target = $xml.Targets | ?{ $_.Name -eq 'Generate' + $ParserKey }
+			if (!$target)
+			{
+				$target = $xml.AddTarget('Generate' + $ParserKey)
+	
+				$parserPrefix = '$(' + $ParserKey + 'Parser)'
+	
+				$target.Inputs = $parserPrefix + '.Language.analyzer.lex;' + $parserPrefix + '.Language.grammar.y'
+				$target.Outputs = $parserPrefix + '.Scanner.Generated.cs;' + $parserPrefix + '.Parser.Generated.cs'
+
+				$task = $target.AddTask('Message')
+				$task.SetParameter('Text', 'Generating scanner for ' + $parserPrefix + ' ...')
+	
+				$task = $target.AddTask('Exec')
+				$task.SetParameter('Command', '$(GplexTool) "/out:' + $parserPrefix + '.Scanner.Generated.cs" "' + $parserPrefix + '.Language.analyzer.lex"')
+				$task.SetParameter('WorkingDirectory', '$(ProjectDir)')
+				$task.SetParameter('Outputs', '$(GenDir)Scanner.cs')
+				$void = $task.AddOutputItem('Outputs', $ParserName + 'Scanner')
+
+				$task = $target.AddTask('Message')
+				$task.SetParameter('Text', 'Generating parser for ' + $parserPrefix + ' ...')
+		
+				$task = $target.AddTask('Exec')
+				$task.SetParameter('Command', '$(GppgTool) /no-lines /gplex "' + $parserPrefix + '.Language.grammar.y" > "' + $parserPrefix + '.Parser.Generated.cs"')
+				$task.SetParameter('WorkingDirectory', '$(ProjectDir)')
+				$task.SetParameter('Outputs', $parserPrefix + '.Parser.Generated.cs')
+				$void = $task.AddOutputItem('Outputs', $ParserName)
+			}
+		}
+	}
+}
+
+
+function Remove-YaccLexToolsSettings
+{
+	$project = Get-Project
+	$buildProject = Get-MSBuildProject
+	$xml = $buildProject.Xml
+
+
+	$pg = $xml.PropertyGroups | ?{ $_.Label -eq 'YltProperties' }
+	if ($pg)
+	{
+		$pg.Parent.RemoveChild($pg)
+	}
+
+
+	$pg = $xml.PropertyGroups | ?{ $_.Label -eq 'YltParsers' }
+	if ($pg)
+	{
+		$parsers = $pg.Properties | ?{ $_.Name -eq 'Names' }
+		$v = $parsers.Value.Split(';')
+		
+		foreach ($ParserKey in $v)
+		{
+			$targetBuildGen = $xml.Targets | ?{ $_.Name -eq 'YltBuildGen' }
+			if ($targetBuildGen)
+			{
+				$dependency = 'Generate' + $ParserKey
+				Remove-TargetDependency $targetBuildGen $dependency
+				if ($targetBuildGen.DependsOnTargets -eq '')
+				{
+					$targetBuildGen.Parent.RemoveChild($targetBuildGen)
+			
+					$targetBeforeBuild = $xml.Targets | ?{ $_.Name -eq 'BeforeBuild' }
+					if ($targetBeforeBuild)
+					{
+						Remove-TargetDependency $targetBeforeBuild 'YltBuildGen'
+					}
+				}
+			}
+
+	
+			$pg = $xml.PropertyGroups | ?{ $_.Label -eq 'Generate' + $ParserKey + 'Properties' }
+			if ($pg)
+			{
+				$pg.Parent.RemoveChild($pg)
+			}
+
+			$target = $xml.Targets | ?{ $_.Name -eq 'Generate' + $ParserKey }
+			if ($target)
+			{
+				$target.Parent.RemoveChild($target)
+			}
+
+			$project.Save()
+		}
+	}
+}
+
+
+
+Export-ModuleMember @( 'Add-Parser', 'Add-CalculatorExample', 'Remove-Parser', 'Remove-AllParsers', 'Add-YaccLexToolsSettings', 'Remove-YaccLexToolsSettings' )
 

@@ -24,9 +24,10 @@
       Changes for v0.2.1:
       * Resolved issues for installing the package into .Net 2.0 projects
       * Updated GPLEX to version 1.2.1
+      * Fixes to installation scripts
       
       Known issues:
-      * After the package has been upgraded, you have to add the parsers again, otherwise the changes to *.lex and *.y files will not be recompiled.
+      * After the package has been upgraded, you have to add the parsers again, otherwise the changes to *.lex and *.y files will not be recompiled. This issue applies for upgrades from versions 0.1.x and 0.2.0
     </releaseNotes>
     <language>en-US</language>
     <tags>yacc lex parser ast gppg gplex compile compiler syntax analyzer grammar LALR c# tools</tags>
