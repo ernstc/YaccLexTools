@@ -1,35 +1,35 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
-  <metadata>
-    <id>YaccLexTools</id>
-    <version>0.2.1</version>
-    <title>YACC/LEX tools</title>
-    <authors>Abriom,Ernesto Cianciotta</authors>
-    <owners>Abriom</owners>
-    <licenseUrl>https://raw.github.com/abriom/YaccLexTools/master/LICENSE</licenseUrl>
-    <projectUrl>https://github.com/abriom/YaccLexTools</projectUrl>
-    <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>
-      This package includes GPPG 1.5.0 and GPLEX 1.2.1 tools for compiling YACC and LEX source files in your C# project.
+    <metadata>
+        <id>YaccLexTools</id>
+        <version>0.2.2</version>
+        <title>YACC/LEX tools</title>
+        <authors>Abriom,Ernesto Cianciotta</authors>
+        <owners>Abriom</owners>
+        <licenseUrl>https://raw.github.com/abriom/YaccLexTools/master/LICENSE</licenseUrl>
+        <projectUrl>https://github.com/abriom/YaccLexTools</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>This package includes GPPG 1.5.2 and GPLEX 1.2.2 tools for compiling YACC and LEX source files in your C# project.
 
       After installing this package, just type "Add-Parser MyLanguage" into Package Manager Console to add a new parser in your project and then Build.
       For a working example type "Add-CalculatorExample".
 
       Take a look at this post for further informations:
 
-      http://ecianciotta-en.abriom.com/2013/08/yacclex-tools-v02.html
-    </description>
-    <summary>Tools for embedding parsers in your C# project.</summary>
-    <releaseNotes>
-      Changes for v0.2.1:
-      * Resolved issues for installing the package into .Net 2.0 projects
-      * Updated GPLEX to version 1.2.1
-      * Fixes to installation scripts
+      http://ecianciotta-en.abriom.com/2013/08/yacclex-tools-v02.html</description>
+        <summary>Tools for embedding parsers in your C# project.</summary>
+        <releaseNotes>Changes for v0.2.2:
+    * Updated GPPG to version 1.5.2
+    * Updated GPLEX to version 1.2.2
+
+Changes for v0.2.1:
+    * Resolved issues for installing the package into .Net 2.0 projects
+    * Updated GPLEX to version 1.2.1
+    * Fixes to installation scripts
       
-      Known issues:
-      * After the package has been upgraded, you have to add the parsers again, otherwise the changes to *.lex and *.y files will not be recompiled. This issue applies for upgrades from versions 0.1.x and 0.2.0
-    </releaseNotes>
-    <language>en-US</language>
-    <tags>yacc lex parser ast gppg gplex compile compiler syntax analyzer grammar LALR c# tools</tags>
-  </metadata>
+Known issues:
+    * After the package has been upgraded, you have to add the parsers again, otherwise the changes to *.lex and *.y files will not be recompiled. This issue applies for upgrades from versions 0.1.x and 0.2.0</releaseNotes>
+        <language>en-US</language>
+        <tags>yacc lex parser ast gppg gplex compile compiler syntax analyzer grammar LALR c# tools</tags>
+    </metadata>
 </package>
