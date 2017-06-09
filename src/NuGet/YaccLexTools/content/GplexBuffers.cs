@@ -18,7 +18,7 @@ namespace QUT.GplexBuffers
 {
 // Code copied from GPLEX embedded resource
     [Serializable]
-    public class BufferException : Exception
+    internal class BufferException : Exception
     {
         public BufferException() { }
         public BufferException(string message) : base(message) { }
@@ -28,7 +28,7 @@ namespace QUT.GplexBuffers
             : base(info, context) { }
     }
 
-    public abstract class ScanBuff
+    internal abstract class ScanBuff
     {
         private string fileNm;
 
@@ -426,13 +426,13 @@ namespace QUT.GplexBuffers
 
     // =============== End ScanBuff-derived classes ==================
 
-    public delegate int BlockReader(char[] block, int index, int number);
+    internal delegate int BlockReader(char[] block, int index, int number);
 
     // A delegate factory, serving up a delegate that
     // reads a block of characters from the underlying
     // encoded stream, via a StreamReader object.
     //
-    public static class BlockReaderFactory
+    internal static class BlockReaderFactory
     {
         public static BlockReader Raw(Stream stream)
         {
