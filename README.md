@@ -1,3 +1,5 @@
+![Nuget](https://img.shields.io/nuget/dt/YaccLexTools) ![Nuget](https://img.shields.io/nuget/v/YaccLexTools)
+
 Yacc/Lex Tools
 ==============
 
