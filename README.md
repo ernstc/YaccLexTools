@@ -10,7 +10,7 @@ For a working example type "Add-CalculatorExample".
 
 Take a look at this post for further informations:
 
-http://ecianciotta-en.abriom.com/2013/08/yacclex-tools-v02.html
+http://ecianciotta-en.blogspot.com/2013/08/yacclex-tools-v02.html
 
 ---
 
