@@ -1,5 +1,5 @@
 // Gardens Point Parser Generator
-// Copyright (c) Wayne Kelly, QUT 2005-2014
+// Copyright (c) Wayne Kelly, QUT 2005-2010
 // (see accompanying GPPGcopyright.rtf)
 
 using System;
@@ -247,20 +247,20 @@ namespace QUT.Gppg {
                         if (action == -1)	// accept
                             return true;
                     }
-                    catch (Exception x) {
-                        if (x is AbortException)
+                    catch (AbortException) {
                             return false;
-                        else if (x is AcceptException)
+                    }
+                    catch (AcceptException) {
                             return true;
-                        else if (x is ErrorException && !ErrorRecovery())
+                    }
+                    catch (ErrorException) {
+                        if (!ErrorRecovery())
                             return false;
                         else
                             throw;  // Rethrow x, preserving information.
-
                     }
                 }
-                else if (action == 0)   // error
-                    if (!ErrorRecovery())
+                else if (action == 0 && !ErrorRecovery()) // error
                         return false;
             }
         }
