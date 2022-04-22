@@ -3,6 +3,7 @@ Bin
 obj
 App_Data
 TestResults
+.vs
 *.user
 *.patch
 *.sln.cache
