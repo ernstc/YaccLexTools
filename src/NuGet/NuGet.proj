@@ -21,7 +21,7 @@
 
 		<Exec Command="&quot;$(NuGetExePath)&quot; pack YaccLexTools\YaccLexTools.nuspec -OutputDirectory &quot;$(OutputPath).&quot; -NoPackageAnalysis" />
 
-		<Copy DestinationFolder="..\..\" SourceFiles="$(OutputPath)YaccLexTools.0.2.2.nupkg" />
+		<Copy DestinationFolder="..\..\" SourceFiles="$(OutputPath)YaccLexTools.0.2.3.nupkg" />
 	
 	</Target>
 
