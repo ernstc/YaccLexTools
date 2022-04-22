@@ -1,8 +1,8 @@
 # Copyright (c) Abriom srl.  All rights reserved.
 
 $knownExceptions = @(
-    'YaccLexTools.PowerShell.YaccLexToolsException',
-    'YaccLexTools.PowerShell.ProjectTypeNotSupportedException'
+    #'YaccLexTools.PowerShell.YaccLexToolsException',
+    #'YaccLexTools.PowerShell.ProjectTypeNotSupportedException'
 )
 
 <#
