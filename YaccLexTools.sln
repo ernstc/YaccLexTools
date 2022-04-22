@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32407.343
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuGet", "NuGet", "{53F7CEAE-571C-453E-B2CB-A7338D7B0903}"
 	ProjectSection(SolutionItems) = preProject
 		src\NuGet\NuGet.proj = src\NuGet\NuGet.proj
