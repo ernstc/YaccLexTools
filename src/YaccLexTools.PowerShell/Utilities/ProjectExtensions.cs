@@ -1,5 +1,5 @@
 ﻿using EnvDTE;
-using Microsoft.VisualStudio.Shell.Interop;
+//using Microsoft.VisualStudio.Shell.Interop;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -75,7 +75,7 @@ namespace YaccLexTools.PowerShell.Extensions
             DebugCheck.NotNull(project);
             DebugCheck.NotEmpty(propertyName);
 
-            var property = project.Properties.Item(propertyName);
+            Property property = project.Properties.Item(propertyName);
 
             if (property == null)
             {
