@@ -34,7 +34,13 @@ namespace YaccLexTools.PowerShell
 				DebugCheck.NotEmpty(parserName);
 
 				if (String.IsNullOrEmpty(@namespace))
+				{
 					@namespace = _projectRootNamespace;
+				}
+                else if (!@namespace.StartsWith(_projectRootNamespace + "."))
+                {
+					@namespace = _projectRootNamespace + "." + @namespace;
+                }
 
 				Dictionary<string, string> tokens = new Dictionary<string, string>();
 				tokens.Add("parserName", parserName);
@@ -47,25 +53,22 @@ namespace YaccLexTools.PowerShell
 
 		protected virtual void Execute(string parserName, string @namespace, Dictionary<string, string> tokens)
 		{
-			string path = @namespace.Replace(".", "\\");
+			string prefix = @namespace;
 
-			if (_projectRootNamespace != null && @namespace.StartsWith(_projectRootNamespace))
+			if (_projectRootNamespace != null && prefix.StartsWith(_projectRootNamespace))
 			{
-				path = path.Substring(_projectRootNamespace.Length);
-				if (path.StartsWith("\\")) path = path.Substring(1);
+				prefix = prefix.Substring(_projectRootNamespace.Length);
+				if (prefix.StartsWith(".")) prefix = prefix.Substring(1);
 			}
 
-			if (path.Length > 0)
-			{
-				parserName = path + "\\" + parserName;
-			}
+			prefix = prefix.Replace(".", "\\");
+			if (prefix.Length > 0) prefix += "\\";
+			prefix += parserName + "\\" + parserName;
 
-			parserName += "\\" + parserName;
-
-			AddFile(parserName + ".Language.analyzer.lex", "___.Language.analyzer.lex", tokens);
-			AddFile(parserName + ".Language.grammar.y", "___.Language.grammar.y", tokens);
-			AddFile(parserName + ".Parser.cs", "___.Parser.cs", tokens);
-			AddFile(parserName + ".Scanner.cs", "___.Scanner.cs", tokens);
+			AddFile(prefix + ".Language.analyzer.lex", "___.Language.analyzer.lex", tokens);
+			AddFile(prefix + ".Language.grammar.y", "___.Language.grammar.y", tokens);
+			AddFile(prefix + ".Parser.cs", "___.Parser.cs", tokens);
+			AddFile(prefix + ".Scanner.cs", "___.Scanner.cs", tokens);
 		}
 
 
