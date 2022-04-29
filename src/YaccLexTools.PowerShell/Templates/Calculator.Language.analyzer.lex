@@ -1,4 +1,4 @@
-%namespace Calculator
+%namespace $namespace$.Calculator
 %scannertype CalculatorScanner
 %visibility internal
 %tokentype Token

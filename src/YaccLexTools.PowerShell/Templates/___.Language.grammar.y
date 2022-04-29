@@ -1,4 +1,4 @@
-%namespace $namespace$
+%namespace $namespace$.$parserName$
 %partial
 %parsertype $parserName$Parser
 %visibility internal

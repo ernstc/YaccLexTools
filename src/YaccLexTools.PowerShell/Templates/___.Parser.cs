@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace $namespace$
+namespace $namespace$.$parserName$
 {
     internal partial class $parserName$Parser
     {

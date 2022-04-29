@@ -1,4 +1,4 @@
-%namespace $namespace$
+%namespace $namespace$.$parserName$
 %scannertype $parserName$Scanner
 %visibility internal
 %tokentype Token

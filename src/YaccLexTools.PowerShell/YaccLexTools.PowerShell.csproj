@@ -57,8 +57,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Templates\___.Parser.cs" />
     <EmbeddedResource Include="Templates\___.Scanner.cs" />
-    <EmbeddedResource Include="Templates\Example\Calculator.Parser.cs" />
-    <EmbeddedResource Include="Templates\Example\Calculator.Scanner.cs" />
+    <EmbeddedResource Include="Templates\Calculator.Parser.cs" />
+    <EmbeddedResource Include="Templates\Calculator.Scanner.cs" />
     <Compile Include="Utilities\Check.cs" />
     <Compile Include="Utilities\DebugCheck.cs" />
     <Compile Include="Utilities\ProjectExtensions.cs" />
@@ -76,8 +76,8 @@
     <EmbeddedResource Include="Templates\___.Language.grammar.y" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Templates\Example\Calculator.Language.analyzer.lex" />
-    <EmbeddedResource Include="Templates\Example\Calculator.Language.grammar.y" />
+    <EmbeddedResource Include="Templates\Calculator.Language.analyzer.lex" />
+    <EmbeddedResource Include="Templates\Calculator.Language.grammar.y" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Templates\project-fragment.xml" />

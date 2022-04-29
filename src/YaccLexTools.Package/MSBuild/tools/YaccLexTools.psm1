@@ -237,11 +237,12 @@ function Add-CalculatorExample
 	[CmdletBinding()] 
 	param() 
 
+	$project = Get-Project
     $runner = New-YltRunner $ProjectName $StartUpProjectName $null $ConfigurationTypeName
 
     try
     {
-        Invoke-RunnerCommand $runner YaccLexTools.PowerShell.AddCalculatorExampleCommand @( )
+        Invoke-RunnerCommand $runner YaccLexTools.PowerShell.AddCalculatorExampleCommand @( $project.Properties["FullPath"].Value, $project.Properties["RootNamespace"].Value )
         $error = Get-RunnerError $runner
 
         if ($error)
@@ -320,9 +321,7 @@ function New-AppDomainSetup($Project, $InstallPath)
 
 function New-DomainDispatcher($ToolsPath)
 {
-	Write-Host "Creating dispatcher ..."
 	$utilityAssemblyPath = (Join-Path $ToolsPath YaccLexTools.PowerShell.Utility.dll)
-	Write-Host $utilityAssemblyPath
     $utilityAssembly = [System.Reflection.Assembly]::LoadFrom($utilityAssemblyPath)
     $dispatcher = $utilityAssembly.CreateInstance(
         'YaccLexTools.PowerShell.Utilities.DomainDispatcher',
@@ -332,8 +331,6 @@ function New-DomainDispatcher($ToolsPath)
         $PSCmdlet,
         $null,
         $null)
-
-	Write-Host "Created dispatcher."
 
     return $dispatcher
 }
@@ -392,28 +389,7 @@ function Invoke-RunnerCommand($runner, $command, $parameters, $anonymousArgument
         }
     }
 
-	Write-Host "Calling command ..."
-	Write-Host $command
-
 	$libraryPath = (Join-Path $runner.ToolsPath YaccLexTools.PowerShell.dll)
-
-	Write-Host $libraryPath
-
-
-	<#
-
-	$commandsAssembly = [System.Reflection.Assembly]::LoadFrom($libraryPath)
-    $commandsAssembly.CreateInstance(
-        $command,
-        $false,
-        0,
-        $null,
-        $parameters,
-        $null,
-        $null) | Out-Null
-	#>
-
-
 
     $domain.CreateInstanceFrom(
         $libraryPath,
@@ -424,9 +400,6 @@ function Invoke-RunnerCommand($runner, $command, $parameters, $anonymousArgument
         $parameters,
         $null,
         $null) | Out-Null
-
-
-	Write-Host "Called command."
 }
 
 

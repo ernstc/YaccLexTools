@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace $namespace$
+namespace $namespace$.$parserName$
 {
     internal partial class $parserName$Scanner
     {

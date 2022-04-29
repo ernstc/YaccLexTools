@@ -14,8 +14,8 @@ namespace YaccLexTools.PowerShell
 	internal class AddParserCommand : YaccLexToolsCommand
 	{
 
-		private string _projectDir;
-		private string _projectRootNamespace;
+		protected          string _projectDir;
+		protected          string _projectRootNamespace;
 
 
 		public AddParserCommand(string parserName, string @namespace, string projectDir, string projectRootNamespace)
@@ -26,25 +26,27 @@ namespace YaccLexTools.PowerShell
 
 			_projectDir = projectDir;
 			_projectRootNamespace = projectRootNamespace;
-			
-			Execute(() => Execute(parserName, @namespace));
+
+			Execute(() =>
+			{
+				WriteLine("\nAdding parser \"" + parserName + "\"...\n");
+
+				DebugCheck.NotEmpty(parserName);
+
+				if (String.IsNullOrEmpty(@namespace))
+					@namespace = _projectRootNamespace;
+
+				Dictionary<string, string> tokens = new Dictionary<string, string>();
+				tokens.Add("parserName", parserName);
+				tokens.Add("namespace", @namespace);
+
+				Execute(parserName, @namespace, tokens);
+			});
 		}
 
 
-		public void Execute(string parserName, string @namespace)
+		protected virtual void Execute(string parserName, string @namespace, Dictionary<string, string> tokens)
 		{
-			DebugCheck.NotEmpty(parserName);
-
-			WriteLine("\nAdding parser \"" + parserName + "\"...\n");
-
-			//string rootNamespace = Project.GetRootNamespace();
-            if (String.IsNullOrEmpty(@namespace))
-                @namespace = _projectRootNamespace;
-
-			Dictionary<string, string> tokens = new Dictionary<string, string>();
-			tokens.Add("parserName", parserName);
-			tokens.Add("namespace", @namespace);
-
 			string path = @namespace.Replace(".", "\\");
 
 			if (_projectRootNamespace != null && @namespace.StartsWith(_projectRootNamespace))
@@ -63,13 +65,11 @@ namespace YaccLexTools.PowerShell
 			AddFile(parserName + ".Language.analyzer.lex", "___.Language.analyzer.lex", tokens);
 			AddFile(parserName + ".Language.grammar.y", "___.Language.grammar.y", tokens);
 			AddFile(parserName + ".Parser.cs", "___.Parser.cs", tokens);
-			//AddFile(parserName + ".Parser.Generated.cs", "___.Parser.Generated.cs", tokens);
 			AddFile(parserName + ".Scanner.cs", "___.Scanner.cs", tokens);
-			//AddFile(parserName + ".Scanner.Generated.cs", "___.Scanner.Generated.cs", tokens);
 		}
 
 
-		private void AddFile(string path, string templateName, Dictionary<string, string> tokens)
+		protected void AddFile(string path, string templateName, Dictionary<string, string> tokens)
 		{
 			string template = LoadTemplate(templateName);
 			AddProjectFile(_projectDir, path, new TemplateProcessor().Process(template, tokens));
