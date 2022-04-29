@@ -1,4 +1,4 @@
-﻿// Copyright (c) Abriom srl. All rights reserved. See License.txt in the project root for license information.
+﻿// Copyright (c) Ernesto Cianciotta. All rights reserved. See License.txt in the project root for license information.
 
 using System.Reflection;
 

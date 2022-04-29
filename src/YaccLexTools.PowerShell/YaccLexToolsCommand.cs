@@ -1,5 +1,6 @@
-﻿using EnvDTE;
+﻿//using EnvDTE;
 using System;
+using System.Diagnostics;
 using System.IO;
 using YaccLexTools.PowerShell.Utilities;
 
@@ -18,20 +19,24 @@ namespace YaccLexTools.PowerShell
 			_dispatcher = (DomainDispatcher)_domain.GetData("yltDispatcher");
 		}
 
-		public virtual Project Project
-		{
-			get { return (Project)_domain.GetData("project"); }
-		}
+		//public virtual Project Project
+		//{
+		//	get 
+		//	{
+		//		object project = _domain.GetData("project");
+		//		return (Project)project;
+		//	}
+		//}
 
-		public Project StartUpProject
-		{
-			get { return (Project)_domain.GetData("startUpProject"); }
-		}
+		//public Project StartUpProject
+		//{
+		//	get { return (Project)_domain.GetData("startUpProject"); }
+		//}
 
-		public Project ContextProject
-		{
-			get { return (Project)_domain.GetData("contextProject"); }
-		}
+		//public Project ContextProject
+		//{
+		//	get { return (Project)_domain.GetData("contextProject"); }
+		//}
 
 		protected AppDomain Domain
 		{
@@ -96,6 +101,19 @@ namespace YaccLexTools.PowerShell
 			_domain.SetData("error.Message", ex.Message);
 			_domain.SetData("error.TypeName", ex.GetType().FullName);
 			_domain.SetData("error.StackTrace", ex.ToString());
+		}
+
+
+		protected void AddProjectFile(string projectDir, string path, string contents)
+		{
+			DebugCheck.NotNull(projectDir);
+			DebugCheck.NotEmpty(path);
+			Debug.Assert(!Path.IsPathRooted(path));
+
+			var absolutePath = Path.Combine(projectDir, path);
+
+			Directory.CreateDirectory(Path.GetDirectoryName(absolutePath));
+			File.WriteAllText(absolutePath, contents);
 		}
 	}
 }

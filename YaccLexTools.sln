@@ -3,44 +3,20 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32407.343
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuGet", "NuGet", "{53F7CEAE-571C-453E-B2CB-A7338D7B0903}"
-	ProjectSection(SolutionItems) = preProject
-		src\NuGet\NuGet.proj = src\NuGet\NuGet.proj
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "YaccLexTools", "YaccLexTools", "{212AC951-0B80-4A99-86EB-F7365E91A294}"
-	ProjectSection(SolutionItems) = preProject
-		src\NuGet\YaccLexTools\YaccLexTools.nuspec = src\NuGet\YaccLexTools\YaccLexTools.nuspec
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "content", "content", "{F26DA68D-1FA2-493C-BF35-1976302E076B}"
-	ProjectSection(SolutionItems) = preProject
-		src\NuGet\YaccLexTools\content\GplexBuffers.cs = src\NuGet\YaccLexTools\content\GplexBuffers.cs
-		src\NuGet\YaccLexTools\content\ShiftReduceParserCode.cs = src\NuGet\YaccLexTools\content\ShiftReduceParserCode.cs
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{ECF7FD07-9435-4CE6-BD40-39F0B5C92BDA}"
-	ProjectSection(SolutionItems) = preProject
-		src\NuGet\YaccLexTools\tools\about_YaccLexTools.help.txt = src\NuGet\YaccLexTools\tools\about_YaccLexTools.help.txt
-		src\NuGet\YaccLexTools\tools\gplex.exe = src\NuGet\YaccLexTools\tools\gplex.exe
-		src\NuGet\YaccLexTools\tools\GPLEXcopyright.rtf = src\NuGet\YaccLexTools\tools\GPLEXcopyright.rtf
-		src\NuGet\YaccLexTools\tools\gppg.exe = src\NuGet\YaccLexTools\tools\gppg.exe
-		src\NuGet\YaccLexTools\tools\GPPGcopyright.rtf = src\NuGet\YaccLexTools\tools\GPPGcopyright.rtf
-		src\NuGet\YaccLexTools\tools\init.ps1 = src\NuGet\YaccLexTools\tools\init.ps1
-		src\NuGet\YaccLexTools\tools\install.ps1 = src\NuGet\YaccLexTools\tools\install.ps1
-		src\NuGet\YaccLexTools\tools\uninstall.ps1 = src\NuGet\YaccLexTools\tools\uninstall.ps1
-		src\NuGet\YaccLexTools\tools\YaccLexTools.psd1 = src\NuGet\YaccLexTools\tools\YaccLexTools.psd1
-		src\NuGet\YaccLexTools\tools\YaccLexTools.psm1 = src\NuGet\YaccLexTools\tools\YaccLexTools.psm1
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YaccLexTools.PowerShell", "src\YaccLexTools.PowerShell\YaccLexTools.PowerShell.csproj", "{E521CF01-3F27-48BB-A205-8D728A7A6A29}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YaccLexTools.PowerShell.Utility", "src\YaccLexTools.PowerShell.Utility\YaccLexTools.PowerShell.Utility.csproj", "{57CBC49D-2CB7-43A8-8B56-B654FF3D92FD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6B0815B7-5CB7-4474-A3DF-719B39DFA48C}"
 	ProjectSection(SolutionItems) = preProject
-		LICENSE = LICENSE
+		LICENSE.md = LICENSE.md
 		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YaccLexTools.Package", "src\YaccLexTools.Package\YaccLexTools.Package.csproj", "{FAEF04FC-3C32-4098-9D79-B4D920208519}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E521CF01-3F27-48BB-A205-8D728A7A6A29} = {E521CF01-3F27-48BB-A205-8D728A7A6A29}
+		{57CBC49D-2CB7-43A8-8B56-B654FF3D92FD} = {57CBC49D-2CB7-43A8-8B56-B654FF3D92FD}
 	EndProjectSection
 EndProject
 Global
@@ -57,13 +33,15 @@ Global
 		{57CBC49D-2CB7-43A8-8B56-B654FF3D92FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{57CBC49D-2CB7-43A8-8B56-B654FF3D92FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{57CBC49D-2CB7-43A8-8B56-B654FF3D92FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FAEF04FC-3C32-4098-9D79-B4D920208519}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FAEF04FC-3C32-4098-9D79-B4D920208519}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FAEF04FC-3C32-4098-9D79-B4D920208519}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FAEF04FC-3C32-4098-9D79-B4D920208519}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{212AC951-0B80-4A99-86EB-F7365E91A294} = {53F7CEAE-571C-453E-B2CB-A7338D7B0903}
-		{F26DA68D-1FA2-493C-BF35-1976302E076B} = {212AC951-0B80-4A99-86EB-F7365E91A294}
-		{ECF7FD07-9435-4CE6-BD40-39F0B5C92BDA} = {212AC951-0B80-4A99-86EB-F7365E91A294}
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DFD5B8F6-B4D5-45E2-A7DC-4C30AE6816C6}
 	EndGlobalSection
 EndGlobal

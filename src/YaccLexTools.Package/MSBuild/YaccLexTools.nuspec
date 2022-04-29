@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>YaccLexTools</id>
+        <version>0.2.3-preview.22</version>
+        <title>YACC/LEX tools</title>
+		<authors>Ernesto Cianciotta</authors>
+		<owners>ernstc</owners>
+		<copyright>© 2013-2022 Ernesto Cianciotta</copyright>
+		<description>
+			This package includes GPPG 1.5.2 and GPLEX 1.2.2 tools for compiling YACC and LEX source files in your C# project.
+		</description>
+		<license type="file">LICENSE.md</license>
+		<readme>docs\README.md</readme>
+		<projectUrl>https://devnotes.ernstc.net/YaccLexTools</projectUrl>
+		<repository type="git" url="https://github.com/ernstc/yacclextools" />
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>        
+        <summary>Tools for embedding parsers into your C# projects.</summary>
+        <releaseNotes>Changes for v0.2.3:
+    * Make public classes in GplexBuffers.cs internal to avoid conflicts between projects
+
+Changes for v0.2.2:
+    * Updated GPPG to version 1.5.2
+    * Updated GPLEX to version 1.2.2
+
+Changes for v0.2.1:
+    * Resolved issues for installing the package into .Net 2.0 projects
+    * Updated GPLEX to version 1.2.1
+    * Fixes to installation scripts
+      
+Known issues:
+    * After the package has been upgraded, you have to add the parsers again, otherwise the changes to *.lex and *.y files will not be recompiled. This issue applies for upgrades from versions 0.1.x and 0.2.0</releaseNotes>
+        <tags>yacc lex parser ast gppg gplex compile compiler syntax analyzer grammar LALR c# tools</tags>
+		<dependencies>
+			<dependency id="YaccLexTools.Gplex" version="[1.2.2.1-preview.3,1.3.0)" />
+			<dependency id="YaccLexTools.Gppg" version="[1.5.2.1-preview.13,1.6.0)" />
+		</dependencies>
+    </metadata>
+	<files>
+		<file src="..\..\..\LICENSE.md" target="" />
+		<file src="..\..\..\README.md" target="docs/" />
+		<file src="tools\*.*" target="tools/" />
+	</files>
+</package>

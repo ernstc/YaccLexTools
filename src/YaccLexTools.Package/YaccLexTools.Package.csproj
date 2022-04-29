@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	</PropertyGroup>
+
+	<!-- Pack settings -->
+	<PropertyGroup>
+		<NoPackageAnalysis>true</NoPackageAnalysis>
+		<NuspecFile>MSBuild/YaccLexTools.nuspec</NuspecFile>
+		<IntermediatePackDir>$(MSBuildProjectDirectory)/bin/$(Configuration)/publish/</IntermediatePackDir>
+		<PublishDir>$(IntermediatePackDir)$(TargetFramework)/</PublishDir>
+		<PackageOutputPath>C:\Progetti\.nuget</PackageOutputPath>
+		<NuspecProperties>publishDir=$([MSBuild]::NormalizeDirectory($(IntermediatePackDir)))</NuspecProperties>
+	</PropertyGroup>
+
+	<Target Name="CopyDependencies" BeforeTargets="CoreCompile">
+		<Message Text="Copying libraries..." />
+		<Copy DestinationFolder="MSBuild\tools" SourceFiles="$(MSBuildProjectDirectory)\..\YaccLexTools.PowerShell\bin\$(Configuration)\YaccLexTools.PowerShell.dll" />
+		<Copy DestinationFolder="MSBuild\tools" SourceFiles="$(MSBuildProjectDirectory)\..\YaccLexTools.PowerShell\bin\$(Configuration)\YaccLexTools.PowerShell.pdb" />
+		<Copy DestinationFolder="MSBuild\tools" SourceFiles="$(MSBuildProjectDirectory)\..\YaccLexTools.PowerShell\bin\$(Configuration)\YaccLexTools.PowerShell.Utility.dll" />
+		<Copy DestinationFolder="MSBuild\tools" SourceFiles="$(MSBuildProjectDirectory)\..\YaccLexTools.PowerShell\bin\$(Configuration)\YaccLexTools.PowerShell.Utility.pdb" />
+	</Target>
+</Project>

@@ -1,47 +1,22 @@
 ﻿<!-- Parser items -->
 <ItemGroup>
-	<None Include="$parserName$.parser" />
-	<Compile Include="$parserName$.Parser.cs">
-		<DependentUpon>$parserName$.parser</DependentUpon>
-	</Compile>
-	<Compile Include="$parserName$.Scanner.cs">
-		<DependentUpon>$parserName$.parser</DependentUpon>
-	</Compile>
-	<None Include="$parserName$.Language.grammar.y">
-		<DependentUpon>$parserName$.parser</DependentUpon>
-	</None>
-	<Compile Include="$parserName$.Parser.Generated.cs">
+	<Compile Include="$parserName$\$parserName$.Parser.cs" />
+	<Compile Include="$parserName$\$parserName$.Scanner.cs" />
+	<YaccFile Include="$parserName$\$parserName$.Language.grammar.y">
+		<OutputFile>$parserName$\$parserName$.Parser.Generated.cs</OutputFile>
+		<Arguments>/gplex /nolines</Arguments>
+	</YaccFile>
+	<Compile Include="$parserName$\$parserName$.Parser.Generated.cs">
 		<AutoGen>True</AutoGen>
 		<DesignTime>True</DesignTime>
-		<DependentUpon>$parserName$.Language.grammar.y</DependentUpon>
+		<DependentUpon>$parserName$\$parserName$.Language.grammar.y</DependentUpon>
 	</Compile>
-	<None Include="$parserName$.Language.analyzer.lex">
-		<DependentUpon>$parserName$.parser</DependentUpon>
-	</None>
-	<Compile Include="$parserName$.Scanner.Generated.cs">
+	<LexFile Include="$parserName$\$parserName$.Language.analyzer.lex">
+		<OutputFile>$parserName$.Scanner.Generated.cs</OutputFile>
+	</LexFile>
+	<Compile Include="$parserName$\$parserName$.Scanner.Generated.cs">
 		<AutoGen>True</AutoGen>
 		<DesignTime>True</DesignTime>
-		<DependentUpon>$parserName$.Language.analyzer.lex</DependentUpon>
+		<DependentUpon>$parserName$\$parserName$.Language.analyzer.lex</DependentUpon>
 	</Compile>
 </ItemGroup>
-
-<!--  Generate the parsers -->
-<PropertyGroup>
-	<$parserName$Parser>$(ProjectDir)$parserName$</$parserName$Parser>
-</PropertyGroup>
-<Target Name="Generate$parserName$Parser"
-				Inputs="$($parserName$Parser).Language.analyzer.lex;$($parserName$Parser).Language.grammar.y"
-				Outputs="$($parserName$Parser).Scanner.Generated.cs;$($parserName$Parser).Parser.Generated.cs">
-	<Message Text="Generating scanner for $($parserName$Parser) ..." />
-	<Exec Command="$(GplexTool) &quot;/out:$($parserName$Parser).Scanner.Generated.cs&quot; &quot;$($parserName$Parser).Language.analyzer.lex&quot;"
-				WorkingDirectory="$(ProjectDir)"
-				Outputs="$(GenDir)Scanner.cs">
-		<Output TaskParameter="Outputs" ItemName="$parserName$Scanner" />
-	</Exec>
-	<Message Text="Generating parser for $($parserName$Parser) ..." />
-	<Exec Command="$(GppgTool) /no-lines /gplex &quot;$($parserName$Parser).Language.grammar.y&quot; > &quot;$($parserName$Parser).Parser.Generated.cs&quot;"
-				WorkingDirectory="$(ProjectDir)"
-				Outputs="$($parserName$Parser).Parser.Generated.cs">
-		<Output TaskParameter="Outputs" ItemName="$parserName$" />
-	</Exec>
-</Target>

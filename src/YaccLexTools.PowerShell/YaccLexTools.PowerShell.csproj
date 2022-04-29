@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -9,9 +9,10 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>YaccLexTools.PowerShell</RootNamespace>
     <AssemblyName>YaccLexTools.PowerShell</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <BuildPackages>true</BuildPackages>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,9 +32,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="envdte, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </Reference>
     <Reference Include="Microsoft.Build" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.OLE.Interop" />
@@ -46,9 +44,6 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="VSLangProj, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\SharedAssemblyInfo.cs">
@@ -61,13 +56,9 @@
     <Compile Include="AddCalculatorExampleCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Templates\___.Parser.cs" />
-    <EmbeddedResource Include="Templates\___.Parser.Generated.cs" />
     <EmbeddedResource Include="Templates\___.Scanner.cs" />
-    <EmbeddedResource Include="Templates\___.Scanner.Generated.cs" />
     <EmbeddedResource Include="Templates\Example\Calculator.Parser.cs" />
-    <EmbeddedResource Include="Templates\Example\Calculator.Parser.Generated.cs" />
     <EmbeddedResource Include="Templates\Example\Calculator.Scanner.cs" />
-    <EmbeddedResource Include="Templates\Example\Calculator.Scanner.Generated.cs" />
     <Compile Include="Utilities\Check.cs" />
     <Compile Include="Utilities\DebugCheck.cs" />
     <Compile Include="Utilities\ProjectExtensions.cs" />
@@ -83,12 +74,10 @@
   <ItemGroup>
     <EmbeddedResource Include="Templates\___.Language.analyzer.lex" />
     <EmbeddedResource Include="Templates\___.Language.grammar.y" />
-    <EmbeddedResource Include="Templates\___.parser" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Templates\Example\Calculator.Language.analyzer.lex" />
     <EmbeddedResource Include="Templates\Example\Calculator.Language.grammar.y" />
-    <EmbeddedResource Include="Templates\Example\Calculator.parser" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Templates\project-fragment.xml" />
@@ -99,7 +88,4 @@
   <Target Name="BeforeBuild">
   </Target>
   -->
-  <Target Name="AfterBuild" Condition="$(BuildPackages) == 'true'">
-    <MSBuild Projects="..\NuGet\NuGet.proj" />
-  </Target>
 </Project>

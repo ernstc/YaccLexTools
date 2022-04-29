@@ -13,8 +13,16 @@ namespace YaccLexTools.PowerShell
 
 	internal class AddCalculatorExampleCommand : YaccLexToolsCommand
 	{
-		public AddCalculatorExampleCommand()
+
+		private string _projectDir;
+		private string _projectRootNamespace;
+
+
+		public AddCalculatorExampleCommand(string projectDir, string projectRootNamespace)
 		{
+			_projectDir = projectDir;
+			_projectRootNamespace = projectRootNamespace;
+			
 			Execute(() => Execute());
 		}
 
@@ -23,20 +31,19 @@ namespace YaccLexTools.PowerShell
 		{
 			//Project.SetYltTarget("Calculator");
 
-			AddFile("Calculator.parser");
 			AddFile("Calculator.Language.analyzer.lex");
 			AddFile("Calculator.Language.grammar.y");
 			AddFile("Calculator.Parser.cs");
-			AddFile("Calculator.Parser.Generated.cs");
+			//AddFile("Calculator.Parser.Generated.cs");
 			AddFile("Calculator.Scanner.cs");
-			AddFile("Calculator.Scanner.Generated.cs");
+			//AddFile("Calculator.Scanner.Generated.cs");
 		}
 
 
 		private void AddFile(string templateName)
 		{
 			string template = LoadTemplate(templateName);
-			Project.AddFile(templateName, template);
+			AddProjectFile(_projectDir, templateName, template);
 		}
 
 
