@@ -4,7 +4,7 @@
 namespace YaccLexTools.PowerShell.Utilities
 {
 
-    internal class Check
+    internal static class Check
     {
         public static T NotNull<T>(T value, string parameterName) where T : class
         {

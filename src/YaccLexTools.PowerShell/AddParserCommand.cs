@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using YaccLexTools.PowerShell.Extensions;
 using YaccLexTools.PowerShell.Utilities;
 
 
@@ -23,6 +22,8 @@ namespace YaccLexTools.PowerShell
 			// Using check because this is effecitively public surface since
 			// it is called by a PowerShell command.
 			Check.NotEmpty(parserName, "parserName");
+			Check.NotEmpty(projectDir, "projectDir");
+			Check.NotEmpty(projectRootNamespace, "projectRootNamespace");
 
 			_projectDir = projectDir;
 			_projectRootNamespace = projectRootNamespace;

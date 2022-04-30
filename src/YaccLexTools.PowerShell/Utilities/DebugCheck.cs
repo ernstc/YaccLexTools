@@ -3,7 +3,7 @@
 
 namespace YaccLexTools.PowerShell.Utilities
 {
-    internal class DebugCheck
+    internal static class DebugCheck
     {
         [Conditional("DEBUG")]
         public static void NotNull<T>(T value) where T : class

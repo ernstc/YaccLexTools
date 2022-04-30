@@ -591,7 +591,138 @@ function Update-YaccLexToolsSettings
 	$buildProject = Get-MSBuildProject
 	$xml = $buildProject.Xml
 
+	$pgYltParsers = $xml.PropertyGroups | ?{ $_.Label -eq 'YltParsers' }
+	if ($pgYltParsers)
+	{
+		Write-Host "Fixing YaccLexTools settings ..."
 
+		# Found obsolete setting, then update is needed.
+		$parsers = $pgYltParsers.Properties | ?{ $_.Name -eq 'Names' }
+		$v = $parsers.Value.Split(';')
+
+		foreach ($ParserName in $v)
+		{
+			# Remove obsolete settings and target for the selected parser
+			$pg = $xml.PropertyGroups | ?{ $_.Label -eq 'Generate' + $ParserName + 'Properties' }
+			if ($pg)
+			{
+				$pg.Parent.RemoveChild($pg)
+			}
+
+			$target = $xml.Targets | ?{ $_.Name -eq 'Generate' + $ParserName }
+			if ($target)
+			{
+				$target.Parent.RemoveChild($target)
+			}
+		}
+
+		#Fix .lex files
+		$files = $xml.Items | ?{ $_.Include.EndsWith('.lex') }
+		foreach ($f in $files)
+		{
+			$itemGroup = $f.Parent
+			$fileName = $f.Include.SubString($f.Include.LastIndexOf('\') + 1)
+
+			$dependent = @($itemGroup.Items | ?{ $_.Include.EndsWith('.cs') -and @($_.Children | ?{ $_.Name -eq 'DependentUpon' -and ($_.Value -eq $fileName) }).Count -gt 0 })[0]
+			$itemGroup.RemoveChild($f);
+			$item = $itemGroup.AddItem('LexFile', $f.Include)
+			$void = $item.AddMetadata('OutputFile', $dependent.Include)
+		}
+
+		#Fix .y files
+		$files = $xml.Items | ?{ $_.Include.EndsWith('.y') }
+		foreach ($f in $files)
+		{
+			$itemGroup = $f.Parent
+			$fileName = $f.Include.SubString($f.Include.LastIndexOf('\') + 1)
+
+			$dependent = @($itemGroup.Items | ?{ $_.Include.EndsWith('.cs') -and @($_.Children | ?{ $_.Name -eq 'DependentUpon' -and ($_.Value -eq $fileName) }).Count -gt 0 })[0]
+			$itemGroup.RemoveChild($f);
+			$item = $itemGroup.AddItem('YaccFile', $f.Include)
+			$void = $item.AddMetadata('OutputFile', $dependent.Include)
+			$void = $item.AddMetadata('Arguments', '/gplex /nolines')
+		}		
+
+		#Remove .parser files
+		$files = $xml.Items | ?{ $_.Include.EndsWith('.parser') }
+		foreach ($f in $files)
+		{
+			$itemGroup = $f.Parent
+			$fileName = $f.Include.SubString($f.Include.LastIndexOf('\') + 1)
+
+			$dependentFiles = $itemGroup.Items | ?{ @($_.Children | ?{ $_.Name -eq 'DependentUpon' -and ($_.Value -eq $fileName) }).Count -gt 0 }
+			foreach ($d in $dependentFiles)
+			{
+				$children = $d.Children | ?{ $_.Name -eq 'DependentUpon' }
+				$d.RemoveChild($children)
+			}
+
+			$itemGroup.RemoveChild($f);
+		}
+
+		#Remove target and other properties
+
+		$target = $xml.Targets | ?{ $_.Name -eq 'BeforeBuild' }
+		if ($target)
+		{
+			Remove-TargetDependency $target 'YltBuildGen'
+			if ($target.DependsOnTargets -eq '')
+			{
+				$target.Parent.RemoveChild($target)
+			}
+		}
+
+		$target = $xml.Targets | ?{ $_.Name -eq 'YltBuildGen' }
+		if ($target)
+		{
+			$target.Parent.RemoveChild($target)
+		}
+
+		$pg = $xml.PropertyGroups | ?{ $_.Label -eq 'YltProperties' }
+		if ($pg)
+		{
+			$pg.Parent.RemoveChild($pg)
+		}
+
+		$pgYltParsers.Parent.RemoveChild($pgYltParsers)
+
+		Add-SupportFilesContent $project $buildProject
+
+		$project.Save()
+	}
+}
+
+
+function Add-SupportFilesContent($project, $buildProject)
+{
+    $runner = New-YltRunner $ProjectName $StartUpProjectName $null $ConfigurationTypeName
+
+    try
+    {
+        Invoke-RunnerCommand $runner YaccLexTools.PowerShell.AddSupportFilesCommand @( $project.Properties["FullPath"].Value )
+        $error = Get-RunnerError $runner
+
+        if ($error)
+        {
+            if ($knownExceptions -notcontains $error.TypeName)
+            {
+                Write-Host $error.StackTrace
+            }
+            else
+            {
+                Write-Verbose $error.StackTrace
+            }
+
+            throw $error.Message
+        }		
+        $(Get-VSComponentModel).GetService([NuGetConsole.IPowerConsoleWindow]).Show()
+
+		Add-SupportFiles $project $buildProject
+    }
+    finally
+    {			
+        Remove-Runner $runner		
+    }	
 }
 
 
@@ -795,5 +926,5 @@ function Remove-YaccLexToolsSettings
 
 
 
-Export-ModuleMember @( 'Add-Parser', 'Add-CalculatorExample', 'Remove-Parser', 'Remove-AllParsers', 'Update-YaccLexToolsSettings', 'Add-YaccLexToolsSettings', 'Remove-YaccLexToolsSettings' )
+Export-ModuleMember @( 'Add-Parser', 'Add-CalculatorExample', 'Update-YaccLexToolsSettings' )
 

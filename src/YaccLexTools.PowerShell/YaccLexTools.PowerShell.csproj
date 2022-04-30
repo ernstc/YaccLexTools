@@ -54,14 +54,16 @@
     </Compile>
     <Compile Include="AddParserCommand.cs" />
     <Compile Include="AddCalculatorExampleCommand.cs" />
+    <Compile Include="AddSupportFilesCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Templates\___.Parser.cs" />
     <EmbeddedResource Include="Templates\___.Scanner.cs" />
     <EmbeddedResource Include="Templates\Calculator.Parser.cs" />
     <EmbeddedResource Include="Templates\Calculator.Scanner.cs" />
+    <EmbeddedResource Include="SupportFiles\GplexBuffers.cs" />
+    <EmbeddedResource Include="SupportFiles\ShiftReduceParserCode.cs" />
     <Compile Include="Utilities\Check.cs" />
     <Compile Include="Utilities\DebugCheck.cs" />
-    <Compile Include="Utilities\ProjectExtensions.cs" />
     <Compile Include="Utilities\TemplateProcessor.cs" />
     <Compile Include="YaccLexToolsCommand.cs" />
   </ItemGroup>

@@ -6,5 +6,7 @@ Write-Host "Type 'get-help YaccLexTools' to see all available YaccLexTools comma
 
 if (Get-Module | ?{ $_.Name -eq 'YaccLexTools' })
 {
-	Add-YaccLexToolsSettings
+	#Add-YaccLexToolsSettings
+
+	Update-YaccLexToolsSettings
 }
