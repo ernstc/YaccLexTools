@@ -21,6 +21,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YaccLexTools.Package", "src
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YaccLexTools.Templates", "src\YaccLexTools.Templates\YaccLexTools.Templates.csproj", "{4D5038C0-8DA8-40D6-82AD-E09032D9B57E}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dotnet-ylt", "src\dotnet-ylt\dotnet-ylt.csproj", "{A6F8C8F6-FD41-469D-8CD4-D850A55EDAF2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +45,10 @@ Global
 		{4D5038C0-8DA8-40D6-82AD-E09032D9B57E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4D5038C0-8DA8-40D6-82AD-E09032D9B57E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4D5038C0-8DA8-40D6-82AD-E09032D9B57E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6F8C8F6-FD41-469D-8CD4-D850A55EDAF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6F8C8F6-FD41-469D-8CD4-D850A55EDAF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6F8C8F6-FD41-469D-8CD4-D850A55EDAF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6F8C8F6-FD41-469D-8CD4-D850A55EDAF2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

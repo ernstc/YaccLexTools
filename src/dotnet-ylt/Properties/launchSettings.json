@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "dotnet-ylt": {
+      "commandName": "Project",
+      "commandLineArgs": "add-parser",
+      "workingDirectory": "C:\\Progetti\\YaccLexTools\\Sample\\ConsoleApp1\\ConsoleApp1"
+    }
+  }
+}
