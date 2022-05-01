@@ -7,5 +7,5 @@ if (Get-Module | ?{ $_.Name -eq 'YaccLexTools' })
 
 Import-Module (Join-Path $toolsPath YaccLexTools.psd1)
 
-Write-Host "Imported module YaccLexTools 0.2.3 ..."
+Write-Host "Imported module YaccLexTools 1.0.0 ..."
 Write-Host

@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>YaccLexTools</id>
-        <version>0.2.3-preview.42</version>
+        <version>1.0.0-preview.1</version>
         <title>YACC/LEX tools</title>
 		<authors>Ernesto Cianciotta</authors>
 		<owners>ernstc</owners>
@@ -16,7 +16,7 @@
 		<repository type="git" url="https://github.com/ernstc/yacclextools" />
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>        
         <summary>Tools for embedding parsers into your C# projects.</summary>
-        <releaseNotes>Changes for v0.2.3:
+        <releaseNotes>Changes for v1.0.0:
     * Make public classes in GplexBuffers.cs internal to avoid conflicts between projects
 
 Changes for v0.2.2:
