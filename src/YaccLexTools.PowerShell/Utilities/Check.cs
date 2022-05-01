@@ -30,8 +30,7 @@ namespace YaccLexTools.PowerShell.Utilities
         {
             if (string.IsNullOrWhiteSpace(value))
             {
-                //throw new ArgumentException(Strings.ArgumentIsNullOrWhitespace(parameterName));
-				throw new ArgumentException(String.Format("Argument is null or white space: \"{0}\"", parameterName));
+                throw new ArgumentException(String.Format("Argument is null or white space: \"{0}\"", parameterName));
             }
 
             return value;

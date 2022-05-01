@@ -11,6 +11,7 @@ namespace YaccLexTools.PowerShell
 {
     internal class AddSupportFilesCommand : YaccLexToolsCommand
     {
+
         protected string _projectDir;
 
 
