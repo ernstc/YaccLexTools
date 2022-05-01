@@ -13,11 +13,7 @@ LONG DESCRIPTION
 
         Cmdlet                   Description
         ----------------------   --------------------------------------------------
-        Add-Parser			     Adds a new parser in a project.
-
-        Remove-Parser            Removes a parser's build settings from a project.
-
-        Remove-AllParsers        Removes build settings for all parsers.
+        Add-Parser			     Adds a new parser.
 
         Add-CalculatorExample    Adds a Calculator example.
 

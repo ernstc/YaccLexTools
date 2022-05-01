@@ -17,38 +17,52 @@ function Add-Parser
 		[string] $ParserName,
 		[parameter(Position = 1)]
 		[string] $Namespace
-	) 
-
-	$ParserKey = Get-ParserKey $ParserName $Namespace
+	)
 
 	$project = Get-Project
-	$buildProject = Get-MSBuildProject
-	$xml = $buildProject.Xml
-
-	$itemGroup = $xml.ItemGroups | ?{ $_.Label -eq $ParserKey + 'Files' }
-	if (!$itemGroup)
+	if ($project.Properties["TargetFrameworkMoniker"].Value -ne $null -and $project.Properties["TargetFrameworkMoniker"].Value.Contains('.NETFramework'))
 	{
-		$runner = New-YltRunner $ProjectName $StartUpProjectName $null $ConfigurationTypeName
+		# Only for .NETFramework project
 
-		try
+		$ParserKey = Get-ParserKey $ParserName $Namespace
+
+		$buildProject = Get-MSBuildProject
+		$xml = $buildProject.Xml
+
+		$itemGroup = $xml.ItemGroups | ?{ $_.Label -eq $ParserKey + 'Files' }
+		if (!$itemGroup)
 		{
-			Invoke-RunnerCommand $runner YaccLexTools.PowerShell.AddParserCommand @( $ParserName, $Namespace, $project.Properties["FullPath"].Value, $project.Properties["RootNamespace"].Value )
-			$error = Get-RunnerError $runner
+			$runner = New-YltRunner $ProjectName $StartUpProjectName $null $ConfigurationTypeName
 
-			if ($error)
+			try
 			{
-				Write-Host $error.StackTrace
-				throw $error.Message
-			}		
-			$(Get-VSComponentModel).GetService([NuGetConsole.IPowerConsoleWindow]).Show()
-		}
-		finally
-		{			
-			Remove-Runner $runner		
-		}
-	}
+				Invoke-RunnerCommand $runner YaccLexTools.PowerShell.AddParserCommand @( $ParserName, $Namespace, $project.Properties["FullPath"].Value, $project.Properties["RootNamespace"].Value )
+				$error = Get-RunnerError $runner
 
-	Add-ParserItems $ParserName $Namespace
+				if ($error)
+				{
+					Write-Host $error.StackTrace
+					throw $error.Message
+				}		
+				$(Get-VSComponentModel).GetService([NuGetConsole.IPowerConsoleWindow]).Show()
+			}
+			finally
+			{			
+				Remove-Runner $runner		
+			}
+		}
+
+		Add-ParserItems $ParserName $Namespace
+	}
+	else
+	{
+		Show-NotCompatibleAlert('Add-Parser')
+		Write-Host "then use the command below from the project folder for adding a new parser:"
+		Write-Host
+		Write-Host "	ylt add-parser"
+		Write-Host
+		Write-Host "--------------------------------------------------------------------------"
+	}
 }
 
 
@@ -67,26 +81,54 @@ function Add-CalculatorExample
 	param() 
 
 	$project = Get-Project
-    $runner = New-YltRunner $ProjectName $StartUpProjectName $null $ConfigurationTypeName
+	if ($project.Properties["TargetFrameworkMoniker"].Value -ne $null -and $project.Properties["TargetFrameworkMoniker"].Value.Contains('.NETFramework'))
+	{
+		# Only for .NETFramework project
 
-    try
-    {
-        Invoke-RunnerCommand $runner YaccLexTools.PowerShell.AddCalculatorExampleCommand @( $project.Properties["FullPath"].Value, $project.Properties["RootNamespace"].Value )
-        $error = Get-RunnerError $runner
+		$runner = New-YltRunner $ProjectName $StartUpProjectName $null $ConfigurationTypeName
 
-        if ($error)
-        {
-            Write-Host $error.StackTrace
-            throw $error.Message
-        }		
-        $(Get-VSComponentModel).GetService([NuGetConsole.IPowerConsoleWindow]).Show()
+		try
+		{
+			Invoke-RunnerCommand $runner YaccLexTools.PowerShell.AddCalculatorExampleCommand @( $project.Properties["FullPath"].Value, $project.Properties["RootNamespace"].Value )
+			$error = Get-RunnerError $runner
 
-		Add-ParserItems 'Calculator' ''
-    }
-    finally
-    {			
-        Remove-Runner $runner		
-    }	
+			if ($error)
+			{
+				Write-Host $error.StackTrace
+				throw $error.Message
+			}		
+			$(Get-VSComponentModel).GetService([NuGetConsole.IPowerConsoleWindow]).Show()
+
+			Add-ParserItems 'Calculator' ''
+		}
+		finally
+		{			
+			Remove-Runner $runner		
+		}
+	}
+	else
+	{
+		Show-NotCompatibleAlert('Add-CalculatorExample')
+		Write-Host "then use the command below from the project folder for adding the calculator example:"
+		Write-Host
+		Write-Host "	ylt add-calculator"
+		Write-Host
+		Write-Host "--------------------------------------------------------------------------"
+	}
+}
+
+
+function Show-NotCompatibleAlert($cmdLet)
+{
+	Write-Host "--------------------------------------------------------------------------"
+	Write-Host "The Cmdlet '$cmdLet' cannot be used on .Net Core and .NET 5+ projects."
+	Write-Host "For achieving the same results use the dotnet tool 'ylt' from the terminal"
+	Write-Host "or install the YaccLexTools extension for Visual Studio."
+	Write-Host
+	Write-Host "For installing the 'ylt' tool use the command below:"
+	Write-Host
+	Write-Host "	dotnet tool install dotnet-ylt --global"
+	Write-Host
 }
 
 
@@ -366,110 +408,124 @@ function Add-ParserItems($ParserName, $Namespace)
 }
 
 
+<#
+.SYNOPSIS
+    Updates obsolete YaccLexTools settings.
+
+.DESCRIPTION
+    Updates obsolete YaccLexTools settings created with older versions (<= 0.2.2) of the package.
+
+#>
 function Update-YaccLexToolsSettings
 {
 	$project = Get-Project
-	$buildProject = Get-MSBuildProject
-	$xml = $buildProject.Xml
-
-	$pgYltParsers = $xml.PropertyGroups | ?{ $_.Label -eq 'YltParsers' }
-	if ($pgYltParsers)
+	if ($project.Properties["TargetFrameworkMoniker"].Value -ne $null -and $project.Properties["TargetFrameworkMoniker"].Value.Contains('.NETFramework'))
 	{
-		Write-Host "Fixing YaccLexTools settings ..."
+		# Only for .NETFramework project
 
-		# Found obsolete setting, then update is needed.
-		$parsers = $pgYltParsers.Properties | ?{ $_.Name -eq 'Names' }
-		$v = $parsers.Value.Split(';')
+		$buildProject = Get-MSBuildProject
+		$xml = $buildProject.Xml
 
-		foreach ($ParserName in $v)
+		$pgYltParsers = $xml.PropertyGroups | ?{ $_.Label -eq 'YltParsers' }
+		if ($pgYltParsers)
 		{
-			# Remove obsolete settings and target for the selected parser
-			$pg = $xml.PropertyGroups | ?{ $_.Label -eq 'Generate' + $ParserName + 'Properties' }
+			Write-Host "Fixing YaccLexTools settings ..."
+			Write-Host
+
+			# Found obsolete setting, then update is needed.
+			$parsers = $pgYltParsers.Properties | ?{ $_.Name -eq 'Names' }
+			$v = $parsers.Value.Split(';')
+
+			foreach ($ParserName in $v)
+			{
+				# Remove obsolete settings and target for the selected parser
+				$pg = $xml.PropertyGroups | ?{ $_.Label -eq 'Generate' + $ParserName + 'Properties' }
+				if ($pg)
+				{
+					$pg.Parent.RemoveChild($pg)
+				}
+
+				$target = $xml.Targets | ?{ $_.Name -eq 'Generate' + $ParserName }
+				if ($target)
+				{
+					$target.Parent.RemoveChild($target)
+				}
+			}
+
+			#Fix .lex files
+			$files = $xml.Items | ?{ $_.Include.EndsWith('.lex') }
+			foreach ($f in $files)
+			{
+				$itemGroup = $f.Parent
+				$fileName = $f.Include.SubString($f.Include.LastIndexOf('\') + 1)
+
+				$dependent = @($itemGroup.Items | ?{ $_.Include.EndsWith('.cs') -and @($_.Children | ?{ $_.Name -eq 'DependentUpon' -and ($_.Value -eq $fileName) }).Count -gt 0 })[0]
+				$itemGroup.RemoveChild($f);
+				$item = $itemGroup.AddItem('LexFile', $f.Include)
+				$void = $item.AddMetadata('OutputFile', $dependent.Include)
+			}
+
+			#Fix .y files
+			$files = $xml.Items | ?{ $_.Include.EndsWith('.y') }
+			foreach ($f in $files)
+			{
+				$itemGroup = $f.Parent
+				$fileName = $f.Include.SubString($f.Include.LastIndexOf('\') + 1)
+
+				$dependent = @($itemGroup.Items | ?{ $_.Include.EndsWith('.cs') -and @($_.Children | ?{ $_.Name -eq 'DependentUpon' -and ($_.Value -eq $fileName) }).Count -gt 0 })[0]
+				$itemGroup.RemoveChild($f);
+				$item = $itemGroup.AddItem('YaccFile', $f.Include)
+				$void = $item.AddMetadata('OutputFile', $dependent.Include)
+				$void = $item.AddMetadata('Arguments', '/gplex /nolines')
+			}		
+
+			#Remove .parser files
+			$files = $xml.Items | ?{ $_.Include.EndsWith('.parser') }
+			foreach ($f in $files)
+			{
+				$itemGroup = $f.Parent
+				$fileName = $f.Include.SubString($f.Include.LastIndexOf('\') + 1)
+
+				$dependentFiles = $itemGroup.Items | ?{ @($_.Children | ?{ $_.Name -eq 'DependentUpon' -and ($_.Value -eq $fileName) }).Count -gt 0 }
+				foreach ($d in $dependentFiles)
+				{
+					$children = $d.Children | ?{ $_.Name -eq 'DependentUpon' }
+					$d.RemoveChild($children)
+				}
+
+				$itemGroup.RemoveChild($f);
+			}
+
+			#Remove obsolete targets and other properties
+
+			$target = $xml.Targets | ?{ $_.Name -eq 'BeforeBuild' }
+			if ($target)
+			{
+				Remove-TargetDependency $target 'YltBuildGen'
+				if ($target.DependsOnTargets -eq '')
+				{
+					$target.Parent.RemoveChild($target)
+				}
+			}
+
+			$target = $xml.Targets | ?{ $_.Name -eq 'YltBuildGen' }
+			if ($target)
+			{
+				$target.Parent.RemoveChild($target)
+			}
+
+			$pg = $xml.PropertyGroups | ?{ $_.Label -eq 'YltProperties' }
 			if ($pg)
 			{
 				$pg.Parent.RemoveChild($pg)
 			}
 
-			$target = $xml.Targets | ?{ $_.Name -eq 'Generate' + $ParserName }
-			if ($target)
-			{
-				$target.Parent.RemoveChild($target)
-			}
+			$pgYltParsers.Parent.RemoveChild($pgYltParsers)
+
+			Add-SupportFilesContent $project $buildProject
+
+			$project.Save()
 		}
-
-		#Fix .lex files
-		$files = $xml.Items | ?{ $_.Include.EndsWith('.lex') }
-		foreach ($f in $files)
-		{
-			$itemGroup = $f.Parent
-			$fileName = $f.Include.SubString($f.Include.LastIndexOf('\') + 1)
-
-			$dependent = @($itemGroup.Items | ?{ $_.Include.EndsWith('.cs') -and @($_.Children | ?{ $_.Name -eq 'DependentUpon' -and ($_.Value -eq $fileName) }).Count -gt 0 })[0]
-			$itemGroup.RemoveChild($f);
-			$item = $itemGroup.AddItem('LexFile', $f.Include)
-			$void = $item.AddMetadata('OutputFile', $dependent.Include)
-		}
-
-		#Fix .y files
-		$files = $xml.Items | ?{ $_.Include.EndsWith('.y') }
-		foreach ($f in $files)
-		{
-			$itemGroup = $f.Parent
-			$fileName = $f.Include.SubString($f.Include.LastIndexOf('\') + 1)
-
-			$dependent = @($itemGroup.Items | ?{ $_.Include.EndsWith('.cs') -and @($_.Children | ?{ $_.Name -eq 'DependentUpon' -and ($_.Value -eq $fileName) }).Count -gt 0 })[0]
-			$itemGroup.RemoveChild($f);
-			$item = $itemGroup.AddItem('YaccFile', $f.Include)
-			$void = $item.AddMetadata('OutputFile', $dependent.Include)
-			$void = $item.AddMetadata('Arguments', '/gplex /nolines')
-		}		
-
-		#Remove .parser files
-		$files = $xml.Items | ?{ $_.Include.EndsWith('.parser') }
-		foreach ($f in $files)
-		{
-			$itemGroup = $f.Parent
-			$fileName = $f.Include.SubString($f.Include.LastIndexOf('\') + 1)
-
-			$dependentFiles = $itemGroup.Items | ?{ @($_.Children | ?{ $_.Name -eq 'DependentUpon' -and ($_.Value -eq $fileName) }).Count -gt 0 }
-			foreach ($d in $dependentFiles)
-			{
-				$children = $d.Children | ?{ $_.Name -eq 'DependentUpon' }
-				$d.RemoveChild($children)
-			}
-
-			$itemGroup.RemoveChild($f);
-		}
-
-		#Remove obsolete targets and other properties
-
-		$target = $xml.Targets | ?{ $_.Name -eq 'BeforeBuild' }
-		if ($target)
-		{
-			Remove-TargetDependency $target 'YltBuildGen'
-			if ($target.DependsOnTargets -eq '')
-			{
-				$target.Parent.RemoveChild($target)
-			}
-		}
-
-		$target = $xml.Targets | ?{ $_.Name -eq 'YltBuildGen' }
-		if ($target)
-		{
-			$target.Parent.RemoveChild($target)
-		}
-
-		$pg = $xml.PropertyGroups | ?{ $_.Label -eq 'YltProperties' }
-		if ($pg)
-		{
-			$pg.Parent.RemoveChild($pg)
-		}
-
-		$pgYltParsers.Parent.RemoveChild($pgYltParsers)
-
-		Add-SupportFilesContent $project $buildProject
-
-		$project.Save()
 	}
 }
 
