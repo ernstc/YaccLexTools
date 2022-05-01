@@ -59,7 +59,7 @@ function Add-Parser
 		Show-NotCompatibleAlert('Add-Parser')
 		Write-Host "then use the command below from the project folder for adding a new parser:"
 		Write-Host
-		Write-Host "	ylt add-parser"
+		Write-Host "	dotnet ylt add-parser -p <parserName> -n <namespaceName>"
 		Write-Host
 		Write-Host "--------------------------------------------------------------------------"
 	}
@@ -111,7 +111,7 @@ function Add-CalculatorExample
 		Show-NotCompatibleAlert('Add-CalculatorExample')
 		Write-Host "then use the command below from the project folder for adding the calculator example:"
 		Write-Host
-		Write-Host "	ylt add-calculator"
+		Write-Host "	dotnet ylt add-calculator"
 		Write-Host
 		Write-Host "--------------------------------------------------------------------------"
 	}
