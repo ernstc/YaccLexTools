@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>YaccLexTools</id>
-        <version>1.0.0-preview.13</version>
+        <version>1.0.0-preview.18</version>
         <title>YACC/LEX tools</title>
 		<authors>Ernesto Cianciotta</authors>
 		<owners>ernstc</owners>

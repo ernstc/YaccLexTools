@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using YaccLexTools.PowerShell.Utilities;
-
+using YaccLexTools.Utilities;
 
 namespace YaccLexTools.PowerShell
 {
@@ -74,22 +74,9 @@ namespace YaccLexTools.PowerShell
 
         protected void AddFile(string path, string templateName, Dictionary<string, string> tokens)
         {
-            string template = LoadTemplate(templateName);
-            AddProjectFile(_projectDir, path, new TemplateProcessor().Process(template, tokens));
+            string content = new Template().GetContent(templateName, tokens);
+            AddProjectFile(_projectDir, path, content);
         }
-
-
-        private string LoadTemplate(string name)
-        {
-            DebugCheck.NotEmpty(name);
-
-            var stream = GetType().Assembly.GetManifestResourceStream("YaccLexTools.PowerShell.Templates." + name);
-            Debug.Assert(stream != null);
-
-            using (var reader = new StreamReader(stream, Encoding.UTF8))
-            {
-                return reader.ReadToEnd();
-            }
-        }
+       
     }
 }

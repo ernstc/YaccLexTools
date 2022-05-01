@@ -23,5 +23,7 @@
 		<Copy DestinationFolder="MSBuild\tools" SourceFiles="$(MSBuildProjectDirectory)\..\YaccLexTools.PowerShell\bin\$(Configuration)\YaccLexTools.PowerShell.pdb" />
 		<Copy DestinationFolder="MSBuild\tools" SourceFiles="$(MSBuildProjectDirectory)\..\YaccLexTools.PowerShell\bin\$(Configuration)\YaccLexTools.PowerShell.Utility.dll" />
 		<Copy DestinationFolder="MSBuild\tools" SourceFiles="$(MSBuildProjectDirectory)\..\YaccLexTools.PowerShell\bin\$(Configuration)\YaccLexTools.PowerShell.Utility.pdb" />
+		<Copy DestinationFolder="MSBuild\tools" SourceFiles="$(MSBuildProjectDirectory)\..\YaccLexTools.PowerShell\bin\$(Configuration)\YaccLexTools.Templates.dll" />
+		<Copy DestinationFolder="MSBuild\tools" SourceFiles="$(MSBuildProjectDirectory)\..\YaccLexTools.PowerShell\bin\$(Configuration)\YaccLexTools.Templates.pdb" />
 	</Target>
 </Project>

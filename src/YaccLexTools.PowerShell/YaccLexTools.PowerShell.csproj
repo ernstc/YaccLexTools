@@ -56,15 +56,8 @@
     <Compile Include="AddCalculatorExampleCommand.cs" />
     <Compile Include="AddSupportFilesCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Templates\___.Parser.cs" />
-    <EmbeddedResource Include="Templates\___.Scanner.cs" />
-    <EmbeddedResource Include="Templates\Calculator.Parser.cs" />
-    <EmbeddedResource Include="Templates\Calculator.Scanner.cs" />
     <EmbeddedResource Include="SupportFiles\GplexBuffers.cs" />
     <EmbeddedResource Include="SupportFiles\ShiftReduceParserCode.cs" />
-    <Compile Include="Utilities\Check.cs" />
-    <Compile Include="Utilities\DebugCheck.cs" />
-    <Compile Include="Utilities\TemplateProcessor.cs" />
     <Compile Include="YaccLexToolsCommand.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -72,17 +65,10 @@
       <Project>{57cbc49d-2cb7-43a8-8b56-b654ff3d92fd}</Project>
       <Name>YaccLexTools.PowerShell.Utility</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Templates\___.Language.analyzer.lex" />
-    <EmbeddedResource Include="Templates\___.Language.grammar.y" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Templates\Calculator.Language.analyzer.lex" />
-    <EmbeddedResource Include="Templates\Calculator.Language.grammar.y" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Templates\project-fragment.xml" />
+    <ProjectReference Include="..\YaccLexTools.Templates\YaccLexTools.Templates.csproj">
+      <Project>{4d5038c0-8da8-40d6-82ad-e09032d9b57e}</Project>
+      <Name>YaccLexTools.Templates</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
