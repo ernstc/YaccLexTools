@@ -117,6 +117,11 @@ namespace DotnetYaccLexTools
                 return;
             }
 
+            if (options.Namespace != null)
+            {
+                options.Namespace = options.Namespace.Replace('/', '.').Replace('\\', '.');
+            }
+
             XDocument xProj = XDocument.Load(projectFile);
 
             string parserKey = GetParserKey(parserName, options.Namespace);
@@ -239,6 +244,11 @@ namespace DotnetYaccLexTools
             if (projectFile == null)
             {
                 return;
+            }
+
+            if (options.Namespace != null)
+            {
+                options.Namespace = options.Namespace.Replace('/', '.').Replace('\\', '.');
             }
 
             XDocument xProj = XDocument.Load(projectFile);
@@ -426,7 +436,7 @@ namespace DotnetYaccLexTools
 
             if (node == null)
             {
-                string name = projectFile.Substring(projectFile.LastIndexOf('\\') + 1);
+                string name = projectFile.Substring(projectFile.LastIndexOf(Path.DirectorySeparatorChar) + 1);
                 name = name.Substring(0, name.LastIndexOf('.'));
                 return name.Replace('.', '_');
             }
@@ -459,8 +469,13 @@ namespace DotnetYaccLexTools
             DebugCheck.NotEmpty(relativePath);
             Debug.Assert(!Path.IsPathRooted(relativePath));
 
-            Directory.CreateDirectory(Path.GetDirectoryName(relativePath));
-            File.WriteAllText(relativePath, contents);
+            relativePath = relativePath.Replace('\\', Path.DirectorySeparatorChar);
+            string? dirPath = Path.GetDirectoryName(relativePath);
+            if (dirPath != null)
+            {
+                Directory.CreateDirectory(dirPath);
+                File.WriteAllText(relativePath, contents);
+            }
         }
     }
 }
