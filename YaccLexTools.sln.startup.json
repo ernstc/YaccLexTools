@@ -79,7 +79,7 @@
     "dotnet-ylt add-parser": {
       "Projects": {
         "dotnet-ylt": {
-          "CommandLineArguments": "add-parser",
+          "CommandLineArguments": "add-parser -p MyParser4",
           "WorkingDirectory": "C:\\Progetti\\YaccLexTools\\Sample\\ConsoleApp1\\ConsoleApp1"
         }
       }

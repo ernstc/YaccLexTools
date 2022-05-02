@@ -11,8 +11,8 @@ namespace DotnetYaccLexTools
     [Verb("add-parser", HelpText = "Adds a new parser.")]
     internal class AddParserOptions
     {
-        [Option('p', "parser-name", HelpText = "Name of the parser.")]
-        public string? ParserName { get; set; }
+        [Option('p', "parser-name", Required = true, HelpText = "Name of the parser.")]
+        public string ParserName { get; set; } = null!;
 
         [Option('n', "namespace", HelpText = "Namespace in which the parse will be included.")]
         public string? Namespace { get; set; }
@@ -22,9 +22,6 @@ namespace DotnetYaccLexTools
     [Verb("add-calculator", HelpText = "Adds a Calculator example.")]
     internal class AddCalculatorOptions
     {
-        [Option('p', "parser-name", HelpText = "Name of the parser.")]
-        public string? ParserName { get; set; }
-
         [Option('n', "namespace", HelpText = "Namespace in which the parse will be included.")]
         public string? Namespace { get; set; }
     }
