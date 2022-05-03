@@ -15,6 +15,15 @@
 		<PublishDir>$(IntermediatePackDir)$(TargetFramework)/</PublishDir>
 		<NuspecProperties>publishDir=$([MSBuild]::NormalizeDirectory($(IntermediatePackDir)))</NuspecProperties>
 	</PropertyGroup>
+	<ItemGroup>
+	  <None Remove="MSBuild\images\Icon.png" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Content Include="MSBuild\images\Icon.png">
+	    <PackagePath>\</PackagePath>
+	    <Pack>True</Pack>
+	  </Content>
+	</ItemGroup>
 
 	<Target Name="CopyDependencies" BeforeTargets="CoreCompile">
 		<Message Text="Copying libraries..." />
