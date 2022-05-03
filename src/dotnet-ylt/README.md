@@ -18,6 +18,6 @@ For adding the calculator example:
 ```powershell
 dotnet ylt add-calculator
 ```
-![video-sample-1.gif](https://raw.githubusercontent.com/ernstc/YaccLexTools/dev-1.0.0/resources/video-sample-1.gif)
+![video-sample-1.gif](https://raw.githubusercontent.com/ernstc/YaccLexTools/master/resources/video-sample-1.gif)
 
 Both commands support the optional parameter `-n` or `--namespace` for creating the parser in the given namespace.
