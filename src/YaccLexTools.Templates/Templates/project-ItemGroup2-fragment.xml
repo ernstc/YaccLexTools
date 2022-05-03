@@ -1,0 +1,21 @@
+﻿<ItemGroup Label="$parserLabel$">
+	<Compile Include="$relativePath$$parserName$.Parser.cs" />
+	<Compile Include="$relativePath$$parserName$.Scanner.cs" />
+	<YaccFile Include="$relativePath$$parserName$.Language.grammar.y">
+		<OutputFile>$relativePath$$parserName$.Parser.Generated.cs</OutputFile>
+		<Arguments>/gplex /nolines</Arguments>
+	</YaccFile>
+	<Compile Include="$relativePath$$parserName$.Parser.Generated.cs">
+		<AutoGen>True</AutoGen>
+		<DesignTime>True</DesignTime>
+		<DependentUpon>$parserName$.Language.grammar.y</DependentUpon>
+	</Compile>
+	<LexFile Include="$relativePath$$parserName$.Language.analyzer.lex">
+		<OutputFile>$relativePath$$parserName$.Scanner.Generated.cs</OutputFile>
+	</LexFile>
+	<Compile Include="$relativePath$$parserName$.Scanner.Generated.cs">
+		<AutoGen>True</AutoGen>
+		<DesignTime>True</DesignTime>
+		<DependentUpon>$parserName$.Language.analyzer.lex</DependentUpon>
+	</Compile>
+</ItemGroup>

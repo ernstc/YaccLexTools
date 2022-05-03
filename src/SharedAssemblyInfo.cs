@@ -6,8 +6,8 @@ using System.Resources;
 using System.Runtime.InteropServices;
 
 [assembly: SatelliteContractVersion("1.0.0.0")]
-[assembly: AssemblyCompany("Abriom srl")]
-[assembly: AssemblyCopyright("© Abriom srl.  All rights reserved.")]
+[assembly: AssemblyCompany("Ernesto Cianciotta")]
+[assembly: AssemblyCopyright("© 2013-2022 Ernesto Cianciotta.  All rights reserved.")]
 [assembly: CLSCompliant(true)]
 [assembly: ComVisible(false)]
 [assembly: NeutralResourcesLanguage("en-US")]

@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net452;netcoreapp3.1;net5.0;net6.0</TargetFrameworks>
+		<RootNamespace>YaccLexTools</RootNamespace>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <Compile Remove="Templates\Calculator.Parser.cs" />
+	  <Compile Remove="Templates\Calculator.Scanner.cs" />
+	  <Compile Remove="Templates\___.Parser.cs" />
+	  <Compile Remove="Templates\___.Scanner.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="Templates\Calculator.Language.analyzer.lex" />
+	  <None Remove="Templates\Calculator.Language.grammar.y" />
+	  <None Remove="Templates\project-ItemGroup1-fragment.xml" />
+	  <None Remove="Templates\project-ItemGroup2-fragment.xml" />
+	  <None Remove="Templates\project-packagereference-fragment.xml" />
+	  <None Remove="Templates\___.Language.analyzer.lex" />
+	  <None Remove="Templates\___.Language.grammar.y" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="Templates\Calculator.Language.analyzer.lex" />
+	  <EmbeddedResource Include="Templates\Calculator.Language.grammar.y" />
+	  <EmbeddedResource Include="Templates\Calculator.Parser.cs" />
+	  <EmbeddedResource Include="Templates\Calculator.Scanner.cs" />
+	  <EmbeddedResource Include="Templates\project-ItemGroup1-fragment.xml" />
+	  <EmbeddedResource Include="Templates\project-ItemGroup2-fragment.xml" />
+	  <EmbeddedResource Include="Templates\project-PackageReference-fragment.xml" />
+	  <EmbeddedResource Include="Templates\___.Language.analyzer.lex" />
+	  <EmbeddedResource Include="Templates\___.Language.grammar.y" />
+	  <EmbeddedResource Include="Templates\___.Parser.cs" />
+	  <EmbeddedResource Include="Templates\___.Scanner.cs" />
+	</ItemGroup>
+
+</Project>

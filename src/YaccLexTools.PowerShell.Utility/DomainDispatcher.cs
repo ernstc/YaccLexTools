@@ -102,16 +102,16 @@
         ///     Opens the file given file in Visual Studio.
         /// </summary>
         /// <param name="fileName">Path of the file to open.</param>
-        public virtual void OpenFile(string fileName)
-        {
-            // Not using Check here because this assembly is very small and without resources
-            if (string.IsNullOrWhiteSpace(fileName))
-            {
-                throw new ArgumentNullException("fileName");
-            }
+        //public virtual void OpenFile(string fileName)
+        //{
+        //    // Not using Check here because this assembly is very small and without resources
+        //    if (string.IsNullOrWhiteSpace(fileName))
+        //    {
+        //        throw new ArgumentNullException("fileName");
+        //    }
 
-            _dte.ItemOperations.OpenFile(fileName);
-        }
+        //    _dte.ItemOperations.OpenFile(fileName);
+        //}
 
         /// <summary>
         ///     This API is not intended to be used directly from your code.
@@ -123,12 +123,12 @@
         ///     The virtual path to the item template to use for the new file based on the tree nodes 
         ///     from the left pane of the new item dialog box and the item name from the right pane.
         /// </param>
-        public void NewTextFile(string text, string item = @"General\Text File")
-        {
-            var window = _dte.ItemOperations.NewFile(item);
-            var textDocument = (TextDocument)window.Document.Object("TextDocument");
-            var editPoint = textDocument.StartPoint.CreateEditPoint();
-            editPoint.Insert(text);
-        }
+        //public void NewTextFile(string text, string item = @"General\Text File")
+        //{
+        //    var window = _dte.ItemOperations.NewFile(item);
+        //    var textDocument = (TextDocument)window.Document.Object("TextDocument");
+        //    var editPoint = textDocument.StartPoint.CreateEditPoint();
+        //    editPoint.Insert(text);
+        //}
     }
 }

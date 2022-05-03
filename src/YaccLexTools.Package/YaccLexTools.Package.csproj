@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	</PropertyGroup>
+
+	<!-- Pack settings -->
+	<PropertyGroup>
+		<NoPackageAnalysis>true</NoPackageAnalysis>
+		<NuspecFile>MSBuild/YaccLexTools.nuspec</NuspecFile>
+		<IntermediatePackDir>$(MSBuildProjectDirectory)/bin/$(Configuration)/publish/</IntermediatePackDir>
+		<PublishDir>$(IntermediatePackDir)$(TargetFramework)/</PublishDir>
+		<NuspecProperties>publishDir=$([MSBuild]::NormalizeDirectory($(IntermediatePackDir)))</NuspecProperties>
+	</PropertyGroup>
+	<ItemGroup>
+	  <None Remove="MSBuild\images\Icon.png" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Content Include="MSBuild\images\Icon.png">
+	    <PackagePath>\</PackagePath>
+	    <Pack>True</Pack>
+	  </Content>
+	</ItemGroup>
+
+	<Target Name="CopyDependencies" BeforeTargets="CoreCompile">
+		<Message Text="Copying libraries..." />
+		<Copy DestinationFolder="MSBuild\tools" SourceFiles="$(MSBuildProjectDirectory)\..\YaccLexTools.PowerShell\bin\$(Configuration)\YaccLexTools.PowerShell.dll" />
+		<Copy DestinationFolder="MSBuild\tools" SourceFiles="$(MSBuildProjectDirectory)\..\YaccLexTools.PowerShell\bin\$(Configuration)\YaccLexTools.PowerShell.pdb" />
+		<Copy DestinationFolder="MSBuild\tools" SourceFiles="$(MSBuildProjectDirectory)\..\YaccLexTools.PowerShell\bin\$(Configuration)\YaccLexTools.PowerShell.Utility.dll" />
+		<Copy DestinationFolder="MSBuild\tools" SourceFiles="$(MSBuildProjectDirectory)\..\YaccLexTools.PowerShell\bin\$(Configuration)\YaccLexTools.PowerShell.Utility.pdb" />
+		<Copy DestinationFolder="MSBuild\tools" SourceFiles="$(MSBuildProjectDirectory)\..\YaccLexTools.PowerShell\bin\$(Configuration)\YaccLexTools.Templates.dll" />
+		<Copy DestinationFolder="MSBuild\tools" SourceFiles="$(MSBuildProjectDirectory)\..\YaccLexTools.PowerShell\bin\$(Configuration)\YaccLexTools.Templates.pdb" />
+	</Target>
+</Project>

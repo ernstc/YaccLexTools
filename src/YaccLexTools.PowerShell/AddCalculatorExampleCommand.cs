@@ -1,56 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using YaccLexTools.PowerShell.Extensions;
-using YaccLexTools.PowerShell.Utilities;
 
 
 namespace YaccLexTools.PowerShell
 {
+    internal class AddCalculatorExampleCommand : AddParserCommand
+    {
 
-	internal class AddCalculatorExampleCommand : YaccLexToolsCommand
-	{
-		public AddCalculatorExampleCommand()
-		{
-			Execute(() => Execute());
-		}
-
-
-		public void Execute()
-		{
-			//Project.SetYltTarget("Calculator");
-
-			AddFile("Calculator.parser");
-			AddFile("Calculator.Language.analyzer.lex");
-			AddFile("Calculator.Language.grammar.y");
-			AddFile("Calculator.Parser.cs");
-			AddFile("Calculator.Parser.Generated.cs");
-			AddFile("Calculator.Scanner.cs");
-			AddFile("Calculator.Scanner.Generated.cs");
-		}
+        public AddCalculatorExampleCommand(string projectDir, string projectRootNamespace)
+            : base("Calculator", "", projectDir, projectRootNamespace)
+        {
+        }
 
 
-		private void AddFile(string templateName)
-		{
-			string template = LoadTemplate(templateName);
-			Project.AddFile(templateName, template);
-		}
+        protected override void Execute(string parserName, string @namespace, Dictionary<string, string> tokens)
+        {
+            string path = parserName + "\\";
 
-
-		private string LoadTemplate(string name)
-		{
-			DebugCheck.NotEmpty(name);
-
-			var stream = GetType().Assembly.GetManifestResourceStream("YaccLexTools.PowerShell.Templates.Example." + name);
-			Debug.Assert(stream != null);
-
-			using (var reader = new StreamReader(stream, Encoding.UTF8))
-			{
-				return reader.ReadToEnd();
-			}
-		}
-	}
+            AddFile(path + "Calculator.Language.analyzer.lex", "Calculator.Language.analyzer.lex", tokens);
+            AddFile(path + "Calculator.Language.grammar.y", "Calculator.Language.grammar.y", tokens);
+            AddFile(path + "Calculator.Parser.cs", "Calculator.Parser.cs", tokens);
+            AddFile(path + "Calculator.Scanner.cs", "Calculator.Scanner.cs", tokens);
+        }
+    }
 }
