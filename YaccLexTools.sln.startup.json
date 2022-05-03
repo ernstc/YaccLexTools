@@ -56,7 +56,7 @@
       "Projects": {
         "dotnet-ylt": {
           "CommandLineArguments": "",
-          "WorkingDirectory": "C:\\Progetti\\YaccLexTools\\Sample\\ConsoleApp1\\ConsoleApp1"
+          "WorkingDirectory": ""
         }
       }
     },
@@ -64,7 +64,7 @@
       "Projects": {
         "dotnet-ylt": {
           "CommandLineArguments": "help",
-          "WorkingDirectory": "C:\\Progetti\\YaccLexTools\\Sample\\ConsoleApp1\\ConsoleApp1"
+          "WorkingDirectory": ""
         }
       }
     },
@@ -72,7 +72,7 @@
       "Projects": {
         "dotnet-ylt": {
           "CommandLineArguments": "add-calculator",
-          "WorkingDirectory": "C:\\Progetti\\YaccLexTools\\Sample\\ConsoleApp1\\ConsoleApp1"
+          "WorkingDirectory": ""
         }
       }
     },
@@ -80,7 +80,7 @@
       "Projects": {
         "dotnet-ylt": {
           "CommandLineArguments": "add-parser -p MyParser4",
-          "WorkingDirectory": "C:\\Progetti\\YaccLexTools\\Sample\\ConsoleApp1\\ConsoleApp1"
+          "WorkingDirectory": ""
         }
       }
     }

@@ -11,6 +11,7 @@ using System.Xml.Linq;
 using CommandLine;
 using YaccLexTools.Utilities;
 
+
 namespace DotnetYaccLexTools
 {
     static class Program
@@ -25,7 +26,11 @@ namespace DotnetYaccLexTools
                .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
                .InformationalVersion;
 
-            _versionString = _versionString?.Substring(0, _versionString.IndexOf("-"));
+            int idx = _versionString.IndexOf("-");
+            if (idx >= 0)
+            {
+                _versionString = _versionString?.Substring(0, _versionString.IndexOf("-"));
+            }
             _currentVersion = string.IsNullOrEmpty(_versionString) ? new Version() : new Version(_versionString);
 
             if (args.Length == 0)
@@ -53,7 +58,7 @@ namespace DotnetYaccLexTools
                 );
         }
 
-        
+
         private static int Execute<T>(Func<T, Task> action, T options)
         {
             CheckForUpdates().Wait();
@@ -68,9 +73,20 @@ namespace DotnetYaccLexTools
             if (_showedLogo) return;
             _showedLogo = true;
             Console.WriteLine(
-                            @"
-"
-                            );
+@"
+ __   __                ___                _____           _     
+ \ \ / /_ _  ___ ___   / / |    _____  __ |_   _|__   ___ | |___ 
+  \ V / _` |/ __/ __| / /| |   / _ \ \/ /   | |/ _ \ / _ \| / __|
+   | | (_| | (_| (__ / / | |__|  __/>  <    | | (_) | (_) | \__ \
+   |_|\__,_|\___\___/_/  |_____\___/_/\_\   |_|\___/ \___/|_|___/
+                                                                 
+      _       _              _              _ _                  
+   __| | ___ | |_ _ __   ___| |_      _   _| | |_                
+  / _` |/ _ \| __| '_ \ / _ \ __|____| | | | | __|               
+ | (_| | (_) | |_| | | |  __/ ||_____| |_| | | |_                
+  \__,_|\___/ \__|_| |_|\___|\__|     \__, |_|\__|               
+                                      |___/                      
+");
         }
 
 
@@ -252,7 +268,7 @@ namespace DotnetYaccLexTools
             }
 
             XDocument xProj = XDocument.Load(projectFile);
-          
+
             string parserKey = GetParserKey(options.ParserName, options.Namespace);
             string rootNamespace = GetRootNamespace(projectFile, xProj);
 
@@ -260,7 +276,7 @@ namespace DotnetYaccLexTools
             {
                 options.Namespace = rootNamespace;
             }
-            else if (options.Namespace != rootNamespace 
+            else if (options.Namespace != rootNamespace
                      && !options.Namespace.StartsWith(rootNamespace + "."))
             {
                 options.Namespace = rootNamespace + "." + options.Namespace;
@@ -328,7 +344,7 @@ namespace DotnetYaccLexTools
                 .Elements(XName.Get("ItemGroup"))
                 .Elements(XName.Get("PackageReference"))
                 .Any(x => x.Attribute(XName.Get("Include")).Value == "YaccLexTools");
-                
+
             if (!hasReference)
             {
                 string packageReferenceXml = new Template().GetContent("project-PackageReference-fragment.xml", tokens);

@@ -1,9 +1,7 @@
 {
   "profiles": {
     "dotnet-ylt": {
-      "commandName": "Project",
-      "commandLineArgs": "add-calculator",
-      "workingDirectory": "C:\\Progetti\\YaccLexTools\\Sample\\ConsoleApp1\\ConsoleApp1"
+      "commandName": "Project"
     }
   }
 }
