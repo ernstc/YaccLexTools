@@ -13,7 +13,7 @@ Lex and Yacc are useful tools that you would use if you want to create a compile
 
 Read my blog post for more details:
 
-http://devnotes.ernstc.net/yacclex-tools-its-time-to-upgrade
+https://devnotes.ernstc.net/yacclextools
 
 ---
 
