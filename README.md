@@ -5,7 +5,7 @@ Yacc/Lex Tools
 
 Lex and Yacc are useful tools that you would use if you want to create a compiler, a transpiler or you just want to interpret a formal language. 
 
-![image.png](https://raw.githubusercontent.com/ernstc/YaccLexTools/dev-1.0.0/resources/pic1.png)
+![image.png](https://raw.githubusercontent.com/ernstc/YaccLexTools/master/resources/pic1.png)
 
 **YaccLexTools** is focused on C#. Other tools are available for other programming languages like C/C++, F#, Java, etc.
 
