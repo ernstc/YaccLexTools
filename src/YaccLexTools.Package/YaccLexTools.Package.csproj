@@ -13,7 +13,6 @@
 		<NuspecFile>MSBuild/YaccLexTools.nuspec</NuspecFile>
 		<IntermediatePackDir>$(MSBuildProjectDirectory)/bin/$(Configuration)/publish/</IntermediatePackDir>
 		<PublishDir>$(IntermediatePackDir)$(TargetFramework)/</PublishDir>
-		<PackageOutputPath>C:\Progetti\.nuget</PackageOutputPath>
 		<NuspecProperties>publishDir=$([MSBuild]::NormalizeDirectory($(IntermediatePackDir)))</NuspecProperties>
 	</PropertyGroup>
 
