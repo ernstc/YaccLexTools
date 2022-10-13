@@ -17,22 +17,8 @@ namespace DotnetYaccLexTools
     static class Program
     {
 
-        static string? _versionString;
-        static Version? _currentVersion;
-
         static void Main(string[] args)
         {
-            _versionString = Assembly.GetEntryAssembly()?
-               .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
-               .InformationalVersion;
-
-            int idx = _versionString.IndexOf("-");
-            if (idx >= 0)
-            {
-                _versionString = _versionString?.Substring(0, _versionString.IndexOf("-"));
-            }
-            _currentVersion = string.IsNullOrEmpty(_versionString) ? new Version() : new Version(_versionString);
-
             if (args.Length == 0)
             {
                 ShowLogo();
@@ -79,7 +65,6 @@ namespace DotnetYaccLexTools
   \ V / _` |/ __/ __| / /| |   / _ \ \/ /   | |/ _ \ / _ \| / __|
    | | (_| | (_| (__ / / | |__|  __/>  <    | | (_) | (_) | \__ \
    |_|\__,_|\___\___/_/  |_____\___/_/\_\   |_|\___/ \___/|_|___/
-                                                                 
       _       _              _              _ _                  
    __| | ___ | |_ _ __   ___| |_      _   _| | |_                
   / _` |/ _ \| __| '_ \ / _ \ __|____| | | | | __|               
@@ -92,28 +77,29 @@ namespace DotnetYaccLexTools
 
 
         #region Utilities
+
         static async Task CheckForUpdates()
         {
-            if (_currentVersion != null)
+            if (Versions.CurrentVersion != null)
             {
                 var lastVersion = await Versions.CheckForNewVersion();
-                if (lastVersion != null)
+                var currentVersion = Versions.CurrentVersion;
+           
+                var v1 = new Version(lastVersion.Major, lastVersion.Minor, lastVersion.Build);
+                var v2 = new Version(currentVersion.Major, currentVersion.Minor, currentVersion.Build);
+
+                if (v1 > v2)
                 {
-                    var v1 = lastVersion.Build < 0 ?
-                        new Version(lastVersion.Major, lastVersion.Minor) :
-                        new Version(lastVersion.Major, lastVersion.Minor, lastVersion.Build);
+                    Console.WriteLine($@"
+------------------------------------------------------------
 
-                    var v2 = new Version(_currentVersion.Major, _currentVersion.Minor, _currentVersion.Build);
+>>> New version available: {lastVersion.ToString(lastVersion.Revision == 0 ? 3 : 4)} <<<
+Use the command below for upgrading to the latest version:
 
-                    if (v1 > v2)
-                    {
-                        ShowLogo();
-                        Console.WriteLine($"Current version: {_currentVersion}\n");
-                        Console.WriteLine($">>> New version available: {lastVersion} <<<");
-                        Console.WriteLine("Use the command below for upgrading to the latest version:\n");
-                        Console.WriteLine("    dotnet tool update dotnet-ylt --global\n");
-                        Console.WriteLine("------------------------------------------------------------");
-                    }
+    dotnet tool update dotnet-ylt --global
+
+------------------------------------------------------------
+");
                 }
             }
         }

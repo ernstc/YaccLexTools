@@ -6,11 +6,28 @@ using NuGet.Common;
 using NuGet.Protocol.Core.Types;
 using NuGet.Protocol;
 using NuGet.Versioning;
+using System.Reflection;
 
 namespace DotnetYaccLexTools
 {
     public static class Versions
     {
+
+        public static string? VersionString { get; }
+        public static Version? CurrentVersion { get; }
+
+
+        static Versions()
+        {
+            string? version = typeof(Versions).Assembly?
+                .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
+                .InformationalVersion;
+
+            VersionString = version ?? "unknown";
+            CurrentVersion = String.IsNullOrEmpty(version) ? new Version() : new Version(version.Split('-')[0]);
+        }
+
+
         public static async Task<Version> CheckForNewVersion()
         {
             ILogger logger = NullLogger.Instance;
