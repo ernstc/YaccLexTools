@@ -16,7 +16,7 @@
 		<RepositoryType>git</RepositoryType>
 		<Title>dotnet-ylt</Title>
 		<Description>Tool adding the project items needed for creating a parser and its scanner.</Description>
-		<Copyright>Copyright (C) 2022 Ernesto Cianciotta</Copyright>
+		<Copyright>Copyright (C) 2023 Ernesto Cianciotta</Copyright>
 		<PackageTags>yacc;lex;parser;ast;gppg;gplex;compile;compiler;syntax;analyzer;grammar;LALR;c#;tools</PackageTags>
 		<PackageOutputPath>./nupkg</PackageOutputPath>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
