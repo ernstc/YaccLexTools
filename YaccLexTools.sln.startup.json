@@ -60,10 +60,18 @@
         }
       }
     },
-    "dotnet-ylt help": {
+    "dotnet-ylt --help": {
       "Projects": {
         "dotnet-ylt": {
-          "CommandLineArguments": "help",
+          "CommandLineArguments": "--help",
+          "WorkingDirectory": ""
+        }
+      }
+    },
+    "dotnet-ylt --version": {
+      "Projects": {
+        "dotnet-ylt": {
+          "CommandLineArguments": "--help",
           "WorkingDirectory": ""
         }
       }
@@ -76,10 +84,26 @@
         }
       }
     },
+    "dotnet-ylt add-calculator --help": {
+      "Projects": {
+        "dotnet-ylt": {
+          "CommandLineArguments": "add-calculator --help",
+          "WorkingDirectory": ""
+        }
+      }
+    },
     "dotnet-ylt add-parser": {
       "Projects": {
         "dotnet-ylt": {
           "CommandLineArguments": "add-parser -p MyParser4",
+          "WorkingDirectory": ""
+        }
+      }
+    },
+    "dotnet-ylt add-parser --help": {
+      "Projects": {
+        "dotnet-ylt": {
+          "CommandLineArguments": "add-parser --help",
           "WorkingDirectory": ""
         }
       }
