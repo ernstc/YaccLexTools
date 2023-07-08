@@ -5,9 +5,9 @@ using System.Reflection;
 using System.Resources;
 using System.Runtime.InteropServices;
 
-[assembly: SatelliteContractVersion("1.0.0.0")]
+[assembly: SatelliteContractVersion("1.2.0.0")]
 [assembly: AssemblyCompany("Ernesto Cianciotta")]
-[assembly: AssemblyCopyright("© 2013-2022 Ernesto Cianciotta.  All rights reserved.")]
+[assembly: AssemblyCopyright("© 2013-2023 Ernesto Cianciotta.  All rights reserved.")]
 [assembly: CLSCompliant(true)]
 [assembly: ComVisible(false)]
 [assembly: NeutralResourcesLanguage("en-US")]
