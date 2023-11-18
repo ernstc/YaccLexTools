@@ -34,6 +34,10 @@ namespace DotnetYaccLexTools.Commands
             if (Namespace != null)
             {
                 Namespace = Namespace.Replace('/', '.').Replace('\\', '.');
+                if (!ValidateNamespace(Namespace))
+                {
+                    return 1;
+                }
             }
 
             XDocument xProj = XDocument.Load(projectFile);

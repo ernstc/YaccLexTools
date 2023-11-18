@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using YaccLexTools.Utilities;
 
@@ -12,6 +13,21 @@ namespace DotnetYaccLexTools.Commands
 
     public abstract class CommandBase
     {
+
+        protected readonly Regex _namespaceRegex = new Regex(@"^[a-zA-Z_][a-zA-Z\d_]*(\.[a-zA-Z_][a-zA-Z\d_]*)*$", RegexOptions.Compiled);
+
+
+        protected bool ValidateNamespace(string @namespace)
+        {
+            if (!_namespaceRegex.IsMatch(@namespace))
+            {
+                Console.Error.WriteLine("Namespace is not valid.");
+                return false;
+            }
+
+            return true;
+        }
+
 
         protected string? GetProjectFile()
         {
