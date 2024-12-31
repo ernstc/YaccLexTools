@@ -24,8 +24,6 @@ namespace QUT.GplexBuffers
         public BufferException(string message) : base(message) { }
         public BufferException(string message, Exception innerException)
             : base(message, innerException) { }
-        protected BufferException(SerializationInfo info, StreamingContext context)
-            : base(info, context) { }
     }
 
     internal abstract class ScanBuff
@@ -60,12 +58,10 @@ namespace QUT.GplexBuffers
             return new BuildBuffer(source);
         }
 
-#if (!BYTEMODE)
         public static ScanBuff GetBuffer(Stream source, int fallbackCodePage)
         {
             return new BuildBuffer(source, fallbackCodePage);
         }
-#endif // !BYTEMODE
 #endif // !NOFILES
     }
 
@@ -353,17 +349,15 @@ namespace QUT.GplexBuffers
         {
             FileStream fStrm = (stream as FileStream);
             if (fStrm != null) FileName = fStrm.Name;
-            NextBlk = BlockReaderFactory.Raw(stream);
+            NextBlk = BlockReaderFactory.Get(stream);
         }
 
-#if (!BYTEMODE)
         public BuildBuffer(Stream stream, int fallbackCodePage)
         {
             FileStream fStrm = (stream as FileStream);
             if (fStrm != null) FileName = fStrm.Name;
             NextBlk = BlockReaderFactory.Get(stream, fallbackCodePage);
         }
-#endif
 
         /// <summary>
         /// Marks a conservative lower bound for the buffer,
@@ -434,43 +428,19 @@ namespace QUT.GplexBuffers
     //
     internal static class BlockReaderFactory
     {
-        public static BlockReader Raw(Stream stream)
-        {
-            return delegate(char[] block, int index, int number)
-            {
-                byte[] b = new byte[number];
-                int count = stream.Read(b, 0, number);
-                int i = 0;
-                int j = index;
-                for (; i < count; i++, j++)
-                    block[j] = (char)b[i];
-                return count;
-            };
-        }
 
-#if (!BYTEMODE)
-        public static BlockReader Get(Stream stream, int fallbackCodePage)
+        public static BlockReader Get(Stream stream, int fallbackCodePage = -2)
         {
             Encoding encoding;
             int preamble = Preamble(stream);
 
             if (preamble != 0)  // There is a valid BOM here!
                 encoding = Encoding.GetEncoding(preamble);
-            else if (fallbackCodePage == -1) // Fallback is "raw" bytes
-                return Raw(stream);
-            else if (fallbackCodePage != -2) // Anything but "guess"
+            else if (fallbackCodePage >= 0) // Anything but "guess"
                 encoding = Encoding.GetEncoding(fallbackCodePage);
             else // This is the "guess" option
-            {
-                int guess = new Guesser(stream).GuessCodePage();
-                stream.Seek(0, SeekOrigin.Begin);
-                if (guess == -1) // ==> this is a 7-bit file
-                    encoding = Encoding.ASCII;
-                else if (guess == 65001)
-                    encoding = Encoding.UTF8;
-                else             // ==> use the machine default
-                    encoding = Encoding.Default;
-            }
+                encoding = GuessEncoding(stream);
+
             StreamReader reader = new StreamReader(stream, encoding);
             return reader.Read;
         }
@@ -488,6 +458,14 @@ namespace QUT.GplexBuffers
             int b2 = stream.ReadByte();
             if (b0 == 0xef && b1 == 0xbb && b2 == 0xbf)
                 return 65001; // UTF8
+
+            int b3 = stream.ReadByte();
+            // Check for UTF-32 BOM (Byte Order Mark)
+            if (b0 == 0x00 && b1 == 0x00 && b2 == 0xFE && b3 == 0xFF)
+                return 12001; // UTF-32BE
+            if (b0 == 0xFF && b1 == 0xFE && b2 == 0x00 && b3 == 0x00)
+                return 12000; // UTF-32LE
+
             //
             // There is no unicode preamble, so we
             // return denoter for the machine default.
@@ -495,7 +473,150 @@ namespace QUT.GplexBuffers
             stream.Seek(0, SeekOrigin.Begin);
             return 0;
         }
-#endif // !BYTEMODE
+
+        private static Encoding GuessEncoding(Stream stream)
+        {
+            stream.Seek(0, SeekOrigin.Begin);
+            if (IsUtf16(stream, out Encoding encoding))
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+                return encoding;
+            }
+
+            stream.Seek(0, SeekOrigin.Begin);
+            if (IsUtf8(stream))
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+                return Encoding.UTF8;
+            }
+
+            stream.Seek(0, SeekOrigin.Begin);
+            if (IsAscii(stream))
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+                return Encoding.ASCII;
+            }
+
+#if !NET462_OR_GREATER
+            stream.Seek(0, SeekOrigin.Begin);
+            if (IsLatin1(stream))
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+                return Encoding.Latin1;
+            }
+#endif
+            stream.Seek(0, SeekOrigin.Begin);
+            return Encoding.Default;
+        }
+
+        private static bool IsUtf8(Stream stream)
+        {
+            int b;
+            while ((b = stream.ReadByte()) != -1)
+            {
+                if ((b & 0x80) == 0) // 0xxxxxxx
+                {
+                    continue;
+                }
+                else if ((b & 0xE0) == 0xC0) // 110xxxxx 10xxxxxx
+                {
+                    if (!IsValidUtf8ContinuationByte(stream)) return false;
+                }
+                else if ((b & 0xF0) == 0xE0) // 1110xxxx 10xxxxxx 10xxxxxx
+                {
+                    if (!IsValidUtf8ContinuationByte(stream) || !IsValidUtf8ContinuationByte(stream)) return false;
+                }
+                else if ((b & 0xF8) == 0xF0) // 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+                {
+                    if (!IsValidUtf8ContinuationByte(stream) || !IsValidUtf8ContinuationByte(stream) || !IsValidUtf8ContinuationByte(stream)) return false;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private static bool IsValidUtf8ContinuationByte(Stream stream)
+        {
+            int b = stream.ReadByte();
+            return b != -1 && (b & 0xC0) == 0x80; // 10xxxxxx
+        }
+
+        private static bool IsUtf16(Stream stream, out Encoding encoding)
+        {
+            encoding = Encoding.Default;
+
+            if (stream.Length >= 2)
+            {
+                // Read the first two bytes
+                int b0 = stream.ReadByte();
+                int b1 = stream.ReadByte();
+
+                // Check for UTF-16 BOM (Byte Order Mark)
+                if (b0 == 0xFF && b1 == 0xFE)
+                {
+                    encoding = Encoding.Unicode;
+                    return true; // UTF-16LE
+                }
+                if (b0 == 0xFE && b1 == 0xFF)
+                {
+                    encoding = Encoding.BigEndianUnicode;
+                    return true; // UTF-16BE
+                }
+
+                // Reset the stream position
+                stream.Seek(0, SeekOrigin.Begin);
+
+                // Check for common UTF-16 patterns
+                byte[] buffer = new byte[2];
+                while (stream.Read(buffer, 0, 2) == 2)
+                {
+                    if (buffer[0] == 0x00 && buffer[1] != 0x00)
+                    {
+                        encoding = Encoding.BigEndianUnicode;
+                        return true; // Likely UTF-16BE
+                    }
+                    if (buffer[0] != 0x00 && buffer[1] == 0x00)
+                    {
+                        encoding = Encoding.Unicode;
+                        return true; // Likely UTF-16LE
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        private static bool IsAscii(Stream stream)
+        {
+            int b;
+            while ((b = stream.ReadByte()) != -1)
+            {
+                // Latin1 includes byte values from 0x00 to 0xFF
+                if (b > 0x7F)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private static bool IsLatin1(Stream stream)
+        {
+            int b;
+            while ((b = stream.ReadByte()) != -1)
+            {
+                // Latin1 includes byte values from 0x00 to 0xFF
+                if (b > 0xFF)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
     }
 #endif // !NOFILES
     #endregion Buffer classes
@@ -540,180 +661,6 @@ namespace QUT.GplexBuffers
             return 0;
         }
     }
-#region guesser
-#if (!BYTEMODE)
-    // ==============================================================
-    // ============          Encoding Guesser           =============
-    // ==============================================================
-
-    /// <summary>
-    /// This class provides a simple finite state automaton that
-    /// scans the file looking for (1) valid UTF-8 byte patterns,
-    /// (2) bytes >= 0x80 which are not part of a UTF-8 sequence.
-    /// The method then guesses whether it is UTF-8 or maybe some 
-    /// local machine default encoding.  This works well for the
-    /// various Latin encodings.
-    /// </summary>
-    internal class Guesser
-    {
-        ScanBuff buffer;
-
-        public int GuessCodePage() { return Scan(); }
-
-        const int maxAccept = 10;
-        const int initial = 0;
-        const int eofNum = 0;
-        const int goStart = -1;
-        const int INITIAL = 0;
-        const int EndToken = 0;
-
-        #region user code
-        /* 
-         *  Reads the bytes of a file to determine if it is 
-         *  UTF-8 or a single-byte code page file.
-         */
-        public long utfX;
-        public long uppr;
-        #endregion user code
-
-        int state;
-        int currentStart = startState[0];
-        int code;
-
-        #region ScannerTables
-        static int[] startState = new int[] { 11, 0 };
-
-        #region CharacterMap
-        static sbyte[] map = new sbyte[256] {
-/*     '\0' */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-/*   '\x10' */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-/*   '\x20' */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-/*      '0' */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-/*      '@' */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-/*      'P' */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-/*      '`' */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-/*      'p' */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-/*   '\x80' */ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 
-/*   '\x90' */ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 
-/*   '\xA0' */ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 
-/*   '\xB0' */ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 
-/*   '\xC0' */ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
-/*   '\xD0' */ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
-/*   '\xE0' */ 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 
-/*   '\xF0' */ 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5 };
-        #endregion
-
-        static sbyte[][] nextState = new sbyte[][] {
-            new sbyte[] {0, 0, 0, 0, 0, 0},
-            new sbyte[] {-1, -1, 10, -1, -1, -1},
-            new sbyte[] {-1, -1, -1, -1, -1, -1},
-            new sbyte[] {-1, -1, 8, -1, -1, -1},
-            new sbyte[] {-1, -1, 5, -1, -1, -1},
-            new sbyte[] {-1, -1, 6, -1, -1, -1},
-            new sbyte[] {-1, -1, 7, -1, -1, -1},
-            null,
-            new sbyte[] {-1, -1, 9, -1, -1, -1},
-            null,
-            null,
-            new sbyte[] {-1, 1, 2, 3, 4, 2}
-        };
-
-
-        [SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
-        // Reason for suppression: cannot have self-reference in array initializer.
-        static Guesser()
-        {
-            nextState[7] = nextState[2];
-            nextState[9] = nextState[2];
-            nextState[10] = nextState[2];
-        }
-
-        int NextState()
-        {
-            if (code == ScanBuff.EndOfFile)
-                return eofNum;
-            else
-                return nextState[state][map[code]];
-        }
-        #endregion
-
-        public Guesser(System.IO.Stream file) { SetSource(file); }
-
-        public void SetSource(System.IO.Stream source)
-        {
-            this.buffer = new BuildBuffer(source);
-            code = buffer.Read();
-        }
-
-        int Scan()
-        {
-            for (; ; )
-            {
-                int next;
-                state = currentStart;
-                while ((next = NextState()) == goStart)
-                    code = buffer.Read();
-
-                state = next;
-                code = buffer.Read();
-
-                while ((next = NextState()) > eofNum)
-                {
-                    state = next;
-                    code = buffer.Read();
-                }
-                if (state <= maxAccept)
-                {
-                    #region ActionSwitch
-#pragma warning disable 162
-                    switch (state)
-                    {
-                        case eofNum:
-                            switch (currentStart)
-                            {
-                                case 11:
-                                    if (utfX == 0 && uppr == 0) return -1; /* raw ascii */
-                                    else if (uppr * 10 > utfX) return 0;   /* default code page */
-                                    else return 65001;                     /* UTF-8 encoding */
-                                    break;
-                            }
-                            return EndToken;
-                        case 1: // Recognized '{Upper128}',	Shortest string "\xC0"
-                        case 2: // Recognized '{Upper128}',	Shortest string "\x80"
-                        case 3: // Recognized '{Upper128}',	Shortest string "\xE0"
-                        case 4: // Recognized '{Upper128}',	Shortest string "\xF0"
-                            uppr++;
-                            break;
-                        case 5: // Recognized '{Utf8pfx4}{Utf8cont}',	Shortest string "\xF0\x80"
-                            uppr += 2;
-                            break;
-                        case 6: // Recognized '{Utf8pfx4}{Utf8cont}{2}',	Shortest string "\xF0\x80\x80"
-                            uppr += 3;
-                            break;
-                        case 7: // Recognized '{Utf8pfx4}{Utf8cont}{3}',	Shortest string "\xF0\x80\x80\x80"
-                            utfX += 3;
-                            break;
-                        case 8: // Recognized '{Utf8pfx3}{Utf8cont}',	Shortest string "\xE0\x80"
-                            uppr += 2;
-                            break;
-                        case 9: // Recognized '{Utf8pfx3}{Utf8cont}{2}',	Shortest string "\xE0\x80\x80"
-                            utfX += 2;
-                            break;
-                        case 10: // Recognized '{Utf8pfx2}{Utf8cont}',	Shortest string "\xC0\x80"
-                            utfX++;
-                            break;
-                        default:
-                            break;
-                    }
-#pragma warning restore 162
-                    #endregion
-                }
-            }
-        }
-    } // end class Guesser
-    
-#endif // !BYTEMODE
-#endregion
 #endif // !NOFILES
 
 // End of code copied from embedded resource

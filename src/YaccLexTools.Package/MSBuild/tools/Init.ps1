@@ -8,7 +8,7 @@ if (Get-Module | ?{ $_.Name -eq 'YaccLexTools' })
 Import-Module (Join-Path $toolsPath YaccLexTools.psd1)
 
 Write-Host
-Write-Host "Imported module YaccLexTools 1.2.0 ..."
+Write-Host "Imported module YaccLexTools 1.2.3 ..."
 Write-Host
 Write-Host "Added Cmdlets"
 Write-Host "-------------"

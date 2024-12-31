@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
-		<TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
+		<TargetFrameworks>net6.0;net8.0;net9.0</TargetFrameworks>
 		<RootNamespace>DotnetYaccLexTools</RootNamespace>
 		<Nullable>enable</Nullable>
 		<Company>Ernesto Cianciotta</Company>
@@ -16,14 +16,14 @@
 		<RepositoryType>git</RepositoryType>
 		<Title>dotnet-ylt</Title>
 		<Description>Tool adding the project items needed for creating a parser and its scanner.</Description>
-		<Copyright>Copyright (c) 2023 Ernesto Cianciotta</Copyright>
+		<Copyright>Copyright (c) 2024 Ernesto Cianciotta</Copyright>
 		<PackageTags>yacc;lex;parser;ast;gppg;gplex;compile;compiler;syntax;analyzer;grammar;LALR;c#;tools</PackageTags>
 		<PackageOutputPath>./nupkg</PackageOutputPath>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageIcon>Icon.png</PackageIcon>
 		<PackageProjectUrl>https://github.com/ernstc/YaccLexTools</PackageProjectUrl>
-		<Version>1.2.2</Version>
+		<Version>1.2.3</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -46,8 +46,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.0.2" />
-		<PackageReference Include="NuGet.Protocol" Version="6.8.0" />
+		<PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.1.1" />
+		<PackageReference Include="NuGet.Protocol" Version="6.12.1" />
 	</ItemGroup>
 
 	<ItemGroup>
